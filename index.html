@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Steakhouse EURCV · Vault Morpho — Dashboard on-chain</title>
+<title>Steakhouse EURCV · Vault Morpho Ethereum — Dashboard on-chain</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -30,7 +30,6 @@ body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:14p
 @keyframes drift{from{transform:translate(-4%,-3%) scale(1)}to{transform:translate(5%,4%) scale(1.12)}}
 .wrap{max-width:1240px;margin:0 auto;padding:0 22px 60px}
 
-/* ---------- header ---------- */
 header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px 0 10px}
 .brand{display:flex;gap:14px;align-items:center}
 .mark{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:20px;color:#1a0d06;
@@ -56,7 +55,6 @@ header.top{display:flex;justify-content:space-between;align-items:center;gap:16p
 .switch input:checked+.slider{border-color:var(--ember);background:rgba(255,106,61,.15)}
 .switch input:checked+.slider::after{left:18px;background:var(--ember);box-shadow:0 0 8px var(--ember)}
 
-/* ---------- vault head ---------- */
 .vault-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin:26px 0 8px}
 h1{font-family:var(--disp);font-weight:800;font-size:clamp(26px,4vw,42px);letter-spacing:.01em;line-height:1.1;text-transform:uppercase}
 h1 .hl{background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -65,15 +63,11 @@ h1 .hl{background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-back
 .manual{display:flex;gap:8px}
 .manual input{font-family:var(--mono);font-size:11px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 12px;width:250px;outline:none;transition:.15s}
 .manual input:focus{border-color:var(--blue)}
-.cand{border-color:var(--blue)!important;color:var(--txt)}
-.cand.active{border-color:var(--ember)!important;box-shadow:0 0 14px rgba(255,106,61,.25)}
 
-/* ---------- log strip ---------- */
 .logstrip{font-family:var(--mono);font-size:10.5px;color:var(--dim);background:rgba(13,13,19,.7);border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin:16px 0;max-height:64px;overflow-y:auto;backdrop-filter:blur(4px)}
 .logstrip div{padding:1px 0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
 .logstrip .ok{color:var(--green)} .logstrip .warn{color:var(--ember2)} .logstrip .err{color:var(--red)}
 
-/* ---------- KPIs ---------- */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
 .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;transition:.2s;position:relative;overflow:hidden}
 .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,106,61,.6),transparent);opacity:0;transition:.25s}
@@ -83,7 +77,6 @@ h1 .hl{background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-back
 .kpi-value{font-family:var(--mono);font-weight:600;font-size:21px;letter-spacing:-.01em}
 .kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
 
-/* ---------- panels ---------- */
 .grid-main{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-bottom:14px}
 @media(max-width:940px){.grid-main{grid-template-columns:1fr}}
 .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:22px;transition:border-color .2s}
@@ -94,22 +87,20 @@ h1 .hl{background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-back
 .tag.b{color:var(--blue);border-color:rgba(91,140,255,.35);background:rgba(91,140,255,.07)}
 .tag.g{color:var(--green);border-color:rgba(65,223,160,.35);background:rgba(65,223,160,.07)}
 
-/* rewards */
 .rw-hero{padding:18px;border:1px solid var(--line);border-radius:14px;background:radial-gradient(400px 120px at 20% 0%,rgba(255,106,61,.10),transparent),var(--panel2);margin-bottom:14px}
 .rw-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
-.rw-big{font-family:var(--disp);font-weight:800;font-size:clamp(26px,3.4vw,38px);margin:8px 0 6px;background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rw-big{font-family:var(--disp);font-weight:800;font-size:clamp(24px,3.2vw,36px);margin:8px 0 6px;background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
 .rw-sub{font-size:11.5px;color:var(--muted)}
 .rw-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 @media(max-width:640px){.rw-stats{grid-template-columns:1fr}}
 .rw-stats>div{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .rw-stats label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:6px}
 .rw-stats b{font-family:var(--mono);font-size:15px;font-weight:600}
-.rw-commit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px}
+.rw-commit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:14px 0}
 .rw-commit input{font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:7px 10px;width:130px;outline:none}
 .rw-commit input:focus{border-color:var(--ember2)}
 .note{font-size:10.5px;color:var(--dim);margin-top:12px;line-height:1.6}
 
-/* tables */
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 th{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
@@ -129,7 +120,6 @@ a.ext:hover{color:var(--ember)}
 .util i.hi{background:linear-gradient(90deg,var(--ember2),var(--red))}
 .util i.g{background:linear-gradient(90deg,var(--blue),var(--green))}
 
-/* allocation */
 .alloc-bar{display:flex;height:16px;border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-bottom:16px;background:var(--panel2)}
 .alloc-bar i{display:block;height:100%;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
 .alloc-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(35,35,47,.55);font-size:12.5px}
@@ -139,7 +129,6 @@ a.ext:hover{color:var(--ember)}
 .alloc-val{font-family:var(--mono);font-size:12px}
 .alloc-pct{font-family:var(--mono);font-size:11px;color:var(--muted);width:58px;text-align:right}
 
-/* skeleton */
 .sk{position:relative;overflow:hidden;background:rgba(255,255,255,.05);border-radius:6px;color:transparent!important}
 .sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:sh 1.4s infinite}
 @keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
@@ -165,12 +154,13 @@ footer .mono{font-family:var(--mono);font-size:10px;color:var(--dim);word-break:
     <div class="mark">S</div>
     <div>
       <div class="brand-line">MORPHO BLUE <span class="x">×</span> STEAKHOUSE FINANCIAL</div>
-      <div class="brand-sub">VAULT EURCV · BASE · LECTURE 100% ON-CHAIN</div>
+      <div class="brand-sub">VAULT EURCV · ETHEREUM MAINNET · LECTURE 100% ON-CHAIN</div>
     </div>
   </div>
   <div class="top-tools">
     <div class="chip" id="rpcChip"><span class="dot" id="rpcDot"></span><span id="rpcHost">RPC : connexion…</span></div>
     <div class="chip" id="blockChip">bloc —</div>
+    <div class="chip">chain : ethereum (1)</div>
     <label class="switch"><input type="checkbox" id="liveToggle" checked><span class="slider"></span><span>LIVE</span></label>
     <button class="btn icon" id="refreshBtn" title="Rafraîchir maintenant">⟳</button>
   </div>
@@ -192,7 +182,6 @@ footer .mono{font-family:var(--mono);font-size:10px;color:var(--dim);word-break:
       <input id="manualAddr" placeholder="Adresse vault (override)" spellcheck="false">
       <button class="btn" id="manualGo">Charger</button>
     </div>
-    <div class="chips-row" id="candidateRow"></div>
   </div>
 </section>
 
@@ -220,15 +209,17 @@ footer .mono{font-family:var(--mono);font-size:10px;color:var(--dim);word-break:
 <footer>
   <div>
     <h3>Méthodologie</h3>
-    <p><b style="color:var(--txt)">Incentives (donations) :</b> les rewards du vault sont versés par transfert direct d'actifs vers l'adresse du vault. Toute donation est immédiatement acquise aux porteurs de parts via le prix de la part (<span style="font-family:var(--mono)">totalAssets</span> inclut le solde idle). Le dashboard détecte ces donations on-chain : événements <span style="font-family:var(--mono)">Transfer(ERC20 → vault)</span> rapprochés des événements <span style="font-family:var(--mono)">Deposit</span> (pour exclure les mints) et des retraits Morpho Blue. « Reste à distribuer » = somme des soldes on-chain des adresses donatrices identifiées ; si un engagement total est saisi, reste = engagement − déjà donné.</p>
-    <p style="margin-top:8px"><b style="color:var(--txt)">Taux :</b> <span style="font-family:var(--mono)">borrowRateView(IRM)</span> + intérêts courus recalculés depuis <span style="font-family:var(--mono)">lastUpdate</span>. APY supply = APR borrow × utilisation × (1 − fee marché). APY vault = pondération par allocation, net des frais vault, idle inclus (0 %).</p>
-    <p style="margin-top:8px" class="dim">Les RPC publics peuvent être lents ou limiter la plage de scan des logs. Aucune donnée off-chain n'est utilisée. Ceci n'est pas un conseil financier.</p>
+    <p><b style="color:var(--txt)">Incentives (donations) :</b> les rewards sont versés par transfert direct de tokens vers le vault. Tokens suivis : le sous-jacent <span style="font-family:var(--mono)">EURCV</span>, plus <span style="font-family:var(--mono)">MORPHO</span> et <span style="font-family:var(--mono)">wstETH</span> (validés dynamiquement par symbol()). Les donations en sous-jacent sont immédiatement intégrées au prix de la part (idle inclus dans totalAssets) ; les donations en autres tokens restent « hors bilan » jusqu'à swap/allocation. Détection : événements <span style="font-family:var(--mono)">Transfer(→ vault)</span> rapprochés des événements <span style="font-family:var(--mono)">Deposit</span> (exclusion des mints) et des retraits Morpho Blue. « Reste à distribuer » = solde du vault (tokens non-underlying) + soldes on-chain des adresses donatrices ; si un engagement est saisi, reste = engagement − déjà donné.</p>
+    <p style="margin-top:8px"><b style="color:var(--txt)">Taux :</b> <span style="font-family:var(--mono)">borrowRateView(IRM)</span> + intérêts courus recalculés depuis <span style="font-family:var(--mono)">lastUpdate</span>. APR supply = APR borrow × utilisation × (1 − fee marché). APY vault = pondération par allocation, net des frais vault, idle inclus (0 %).</p>
+    <p style="margin-top:8px" class="dim">6 RPC publics Ethereum en failover automatique. Le scan des logs est adaptatif (plages réduites en cas de limite). Aucune donnée off-chain n'est utilisée. Ceci n'est pas un conseil financier.</p>
   </div>
   <div>
-    <h3>Contrats (Base)</h3>
+    <h3>Contrats (Ethereum)</h3>
     <ul>
       <li class="mono">Morpho Blue<br>0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb</li>
-      <li class="mono" style="margin-top:8px">MetaMorpho Factory<br>0xA9c3D3a366466Fa809d1Ae982Fb4c4E4c8dD443A</li>
+      <li class="mono" style="margin-top:8px">Vault Steakhouse EURCV<br>0xbeef0C075Da5D01112AE5cF34d257074fB5DDB2f</li>
+      <li class="mono" style="margin-top:8px">MORPHO<br>0x58D97B57BB95320F9a08dC4716358989345b7155</li>
+      <li class="mono" style="margin-top:8px">wstETH<br>0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0</li>
       <li class="mono" style="margin-top:8px">Multicall3<br>0xcA11bde05977b3631167028862bE2a173976CA11</li>
     </ul>
     <p style="margin-top:12px"><button class="btn" id="rescanBtn">⟲ Rescan complet (événements)</button></p>
@@ -242,32 +233,39 @@ footer .mono{font-family:var(--mono);font-size:10px;color:var(--dim);word-break:
 "use strict";
 /* ================= CONFIG ================= */
 const CFG={
-  chain:"Base", chainId:8453,
+  chain:"Ethereum", chainId:1,
   morphoBlue:"0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-  factory:"0xA9c3D3a366466Fa809d1Ae982Fb4c4E4c8dD443A",
   multicall3:"0xcA11bde05977b3631167028862bE2a173976CA11",
-  scanWindow:22_000_000,
+  knownVault:"0xbeef0C075Da5D01112AE5cF34d257074fB5DDB2f",
+  rewardExtra:[
+    {addr:"0x58D97B57BB95320F9a08dC4716358989345b7155", expect:/morpho/i},  // MORPHO
+    {addr:"0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", expect:/wsteth/i}   // wstETH
+  ],
+  scanWindow:6_500_000,     // ~2,4 ans à 12 s/bloc — couvre tout l'historique Morpho Blue mainnet
+  donWindow:3_000_000,      // fenêtre fallback pour le scan donations
   refreshMs:60_000,
   rpcs:[
-    "https://base-rpc.publicnode.com",
-    "https://mainnet.base.org",
-    "https://base.llamarpc.com",
-    "https://1rpc.io/base",
-    "https://base.drpc.org"
+    "https://ethereum-rpc.publicnode.com",
+    "https://eth.llamarpc.com",
+    "https://eth.drpc.org",
+    "https://1rpc.io/eth",
+    "https://eth.merkle.io",
+    "https://rpc.mevblocker.io"
   ]
 };
 const WAD=10n**18n, ZERO="0x0000000000000000000000000000000000000000", SPY=31536000;
 const PALETTE=["#ff6a3d","#5b8cff","#ffb13d","#41dfa0","#c084fc","#ff5d6c","#67e8f9","#f9a8d4","#a3e635","#fbbf24"];
-const CACHE_KEY="steakEURCV-cache-v2", CACHE_TTL=3*3600*1000;
+const CACHE_KEY="steakEURCV-eth-cache-v1", CACHE_TTL=3*3600*1000;
 
 /* ================= ETAT ================= */
 const S={
   latest:0, nowSec:0, rpcIdx:0, rpcHost:"",
-  eurcv:null, vault:null, vaultBlock:null, candidates:[],
-  marketIndex:new Map(), // id -> {id, params}
-  mkts:[], tokens:{}, vaultMeta:{},
-  donations:{given:0n, donors:new Map(), idle:0n, scannedTo:0},
-  commitment:null, busy:false, booted:false
+  eurcv:null, vault:null, vaultBlock:null,
+  marketIndex:new Map(), // id -> {id, params, totals, vaultShares, rate, cap}
+  mkts:[], tokens:{}, vaultMeta:{}, idle:0n,
+  rewards:{tokens:[], scannedTo:0},
+  commitment:null, rwStats:null,
+  busy:false, booted:false
 };
 
 /* ================= LOG / TOAST ================= */
@@ -283,18 +281,19 @@ function fatal(msg){document.getElementById("fatalBox").innerHTML=`<div class="b
 
 /* ================= FORMAT ================= */
 const fU=(w,d)=>Number(ethers.formatUnits(w,d));
-function fmtEUR(v,compact){
+function fmtTok(v,sym){
   if(v==null||!isFinite(v))return "—";
-  if(compact&&Math.abs(v)>=1e6)return (v/1e6).toLocaleString("fr-FR",{maximumFractionDigits:2})+" M€";
-  if(Math.abs(v)>=1000)return v.toLocaleString("fr-FR",{maximumFractionDigits:0})+" €";
-  return v.toLocaleString("fr-FR",{maximumFractionDigits:2})+" €";
+  if(Math.abs(v)>=1e6)return (v/1e6).toLocaleString("fr-FR",{maximumFractionDigits:2})+" M "+sym;
+  if(Math.abs(v)>=1000)return v.toLocaleString("fr-FR",{maximumFractionDigits:0})+" "+sym;
+  return v.toLocaleString("fr-FR",{maximumFractionDigits:2})+" "+sym;
 }
+const fmtEUR=(v,sym="€")=>fmtTok(v,sym);
 const fmtPct=(v,d=2)=>(v==null||!isFinite(v))?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d})+" %";
 const short=a=>a?a.slice(0,6)+"…"+a.slice(-4):"";
 const hexBlock=n=>"0x"+Math.floor(n).toString(16);
 const mb=n=>(n/1e6).toFixed(1)+"M";
 
-/* ================= RPC ================= */
+/* ================= RPC (failover multi-nœuds) ================= */
 async function rpcCall(method,params,timeout=25000){
   let lastErr;
   for(let i=0;i<CFG.rpcs.length;i++){
@@ -312,7 +311,7 @@ async function rpcCall(method,params,timeout=25000){
     }catch(e){lastErr=e;}
   }
   document.getElementById("rpcDot").classList.add("err");
-  throw new Error("RPC indisponibles ("+(lastErr&&lastErr.message||"?")+")");
+  throw new Error("6 RPC échoués ("+(lastErr&&lastErr.message||"?")+")");
 }
 
 /* ================= INTERFACES ================= */
@@ -335,7 +334,6 @@ function initIfaces(){
   ]);
   IF.irm=new ethers.Interface(["function borrowRateView((address,address,address,address,uint256)) view returns (uint256)"]);
   IF.erc20=new ethers.Interface(["function symbol() view returns (string)","function name() view returns (string)","function decimals() view returns (uint8)","function balanceOf(address) view returns (uint256)","event Transfer(address indexed from, address indexed to, uint256 value)"]);
-  IF.factory=new ethers.Interface(["event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)"]);
   IF.mc=new ethers.Interface(["function aggregate3((address,bool,bytes)[] calls) payable returns ((bool,bytes)[] returnData)"]);
 }
 
@@ -361,14 +359,14 @@ function reader(){const tasks=[];return{
 
 /* ================= LOGS (scan adaptatif) ================= */
 async function scanLogs(address,topics,from,to,label){
-  const out=[]; let chunk=2_500_000; const MIN=30_000; let cur=from;
+  const out=[]; let chunk=1_000_000; const MIN=20_000; let cur=from;
   while(cur<=to){
     const end=Math.min(cur+chunk-1,to);
     try{
-      const logs=await rpcCall("eth_getLogs",[{address,topics,fromBlock:hexBlock(cur),toBlock:hexBlock(end)}],40000);
+      const logs=await rpcCall("eth_getLogs",[{address,topics,fromBlock:hexBlock(cur),toBlock:hexBlock(end)}],45000);
       out.push(...(logs||[]));
       log(`${label} : ${mb(cur)} → ${mb(end)} ✓ (${(logs||[]).length} logs)`);
-      cur=end+1; if(chunk<2_500_000)chunk=Math.min(chunk*2,2_500_000);
+      cur=end+1; if(chunk<1_000_000)chunk=Math.min(chunk*2,1_000_000);
     }catch(e){
       if(chunk<=MIN)throw e;
       log(`${label} : plage réduite (${(e.message||"").slice(0,42)})`,"warn");
@@ -378,102 +376,60 @@ async function scanLogs(address,topics,from,to,label){
   return out;
 }
 
-/* ================= DECOUVERTE STATIQUE ================= */
+/* ================= CACHE ================= */
 function loadCache(){try{const c=JSON.parse(sessionStorage.getItem(CACHE_KEY));if(c&&Date.now()-c.ts<CACHE_TTL)return c;}catch(e){}return null;}
 function saveCache(){try{
   const markets=[...S.marketIndex.values()].map(m=>({id:m.id,params:m.params}));
-  sessionStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),eurcv:S.eurcv,vault:S.vault,vaultBlock:S.vaultBlock,markets}));
+  sessionStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),eurcv:S.eurcv,vault:S.vault,markets}));
 }catch(e){}}
 
+/* ================= DECOUVERTE STATIQUE ================= */
 async function initStatic(force){
   if(!force){
     const c=loadCache();
     if(c&&c.vault&&c.eurcv){
-      log("Cache session utilisé (rescan via bouton footer)","warn");
-      S.eurcv=c.eurcv;S.vault=c.vault;S.vaultBlock=c.vaultBlock;
+      log("Cache session utilisé (rescan complet via bouton footer)","warn");
+      S.eurcv=c.eurcv;S.vault=c.vault;
       (c.markets||[]).forEach(m=>S.marketIndex.set(m.id,{id:m.id,params:m.params}));
-      renderCandidates();return;
+      return;
     }
   }
   sessionStorage.removeItem(CACHE_KEY);
   S.latest=parseInt(await rpcCall("eth_blockNumber",[]),16);
   document.getElementById("blockChip").textContent="bloc "+S.latest.toLocaleString("fr-FR");
+  if(!S.vault)S.vault=CFG.knownVault;
+
+  // sous-jacent du vault -> token EURCV
+  let assetAddr=null;
+  const R=reader();
+  R.add(S.vault,IF.vault,"asset",[],r=>assetAddr=ethers.getAddress(r[0]));
+  await R.flush();
+  if(assetAddr){
+    const R2=reader();const tm={};
+    R2.add(assetAddr,IF.erc20,"symbol",[],r=>tm.sym=r[0]);
+    R2.add(assetAddr,IF.erc20,"decimals",[],r=>tm.dec=Number(r[0]));
+    await R2.flush();
+    S.eurcv={address:assetAddr,symbol:tm.sym||"EURCV",decimals:tm.dec??18};
+    log(`Sous-jacent résolu : ${S.eurcv.symbol} (${short(assetAddr)})`,"ok");
+  }
+
+  // tous les marchés Morpho Blue via CreateMarket
   const from=Math.max(1,S.latest-CFG.scanWindow);
   const cmT0=IF.blue.getEvent("CreateMarket").topicHash;
-  const cmmT0=IF.factory.getEvent("CreateMetaMorpho").topicHash;
-
-  let mktLogs=[],facLogs=[];
-  try{mktLogs=await scanLogs(CFG.morphoBlue,[cmT0],from,S.latest,"CreateMarket");}
-  catch(e){log("Scan CreateMarket échoué : "+e.message,"err");}
-  try{facLogs=await scanLogs(CFG.factory,[cmmT0],from,S.latest,"CreateMetaMorpho");}
-  catch(e){log("Scan CreateMetaMorpho échoué : "+e.message,"err");}
-
-  // --- marchés ---
-  let loanTokens=new Set();
-  for(const lg of mktLogs){
-    try{
-      const p=IF.blue.parseLog({topics:lg.topics,data:lg.data}); if(!p)continue;
-      const mp=p.args[1];
-      S.marketIndex.set(p.args[0],{id:p.args[0],params:{loanToken:mp[0],collateralToken:mp[1],oracle:mp[2],irm:mp[3],lltv:mp[4]}});
-      loanTokens.add(mp[0].toLowerCase());
-    }catch(e){}
-  }
-  log(`${S.marketIndex.size} marchés Morpho Blue décodés`,"ok");
-
-  // --- token EURCV via les loan tokens ---
-  if(!S.eurcv){
-    const R=reader(); const meta={};
-    [...loanTokens].forEach(a=>{
-      R.add(a,IF.erc20,"symbol",[],r=>{(meta[a]=meta[a]||{}).sym=r[0];});
-      R.add(a,IF.erc20,"decimals",[],r=>{(meta[a]=meta[a]||{}).dec=Number(r[0]);});
-    });
-    await R.flush();
-    for(const[a,m]of Object.entries(meta)){
-      if(m.sym&&/eurcv/i.test(m.sym)){S.eurcv={address:ethers.getAddress(a),symbol:m.sym,decimals:m.dec??18};break;}
+  try{
+    const mktLogs=await scanLogs(CFG.morphoBlue,[cmT0],from,S.latest,"CreateMarket");
+    for(const lg of mktLogs){
+      try{
+        const p=IF.blue.parseLog({topics:lg.topics,data:lg.data}); if(!p)continue;
+        const mp=p.args[1];
+        S.marketIndex.set(p.args[0],{id:p.args[0],params:{loanToken:mp[0],collateralToken:mp[1],oracle:mp[2],irm:mp[3],lltv:mp[4]}});
+      }catch(e){}
     }
+    log(`${S.marketIndex.size} marchés Morpho Blue décodés`,"ok");
+  }catch(e){
+    log("Scan CreateMarket échoué : "+e.message+" — fallback sur la supply queue du vault","err");
   }
-
-  // --- vaults EURCV via factory ---
-  const cands=[];
-  for(const lg of facLogs){
-    try{
-      const p=IF.factory.parseLog({topics:lg.topics,data:lg.data}); if(!p)continue;
-      const nm=(p.args[5]||"")+" "+(p.args[6]||"");
-      if(/eurcv/i.test(nm)){
-        cands.push({addr:ethers.getAddress(p.args[0]),name:p.args[5],symbol:p.args[6],asset:ethers.getAddress(p.args[4]),block:parseInt(lg.blockNumber,16)});
-      }
-    }catch(e){}
-  }
-  // fallback : filtrer par topic asset si décodage KO
-  if(!cands.length&&S.eurcv){
-    const seen=new Set();
-    for(const lg of facLogs){
-      if(lg.topics.length>=4&&lg.topics[3]&&lg.topics[3].slice(-40).toLowerCase()===S.eurcv.address.toLowerCase().slice(2)){
-        const a=ethers.getAddress("0x"+lg.topics[1].slice(-40));
-        if(!seen.has(a)){seen.add(a);cands.push({addr:a,name:"(à valider)",symbol:"?",asset:S.eurcv.address,block:parseInt(lg.blockNumber,16)});}
-      }
-    }
-  }
-  cands.sort((a,b)=>{const s=x=>/steak/i.test((x.name||"")+(x.symbol||""))?0:1;return s(a)-s(b);});
-  S.candidates=cands;
-  log(`${cands.length} vault(s) EURCV détecté(s) via la factory`,"ok");
-  if(cands.length){S.vault=cands[0].addr;S.vaultBlock=cands[0].block;}
-  renderCandidates();
   saveCache();
-}
-
-function renderCandidates(){
-  const row=document.getElementById("candidateRow"); row.innerHTML="";
-  if(S.candidates.length>1){
-    S.candidates.forEach(c=>{
-      const b=document.createElement("button");
-      b.className="chip click cand"+(c.addr===S.vault?" active":"");
-      b.textContent=(c.symbol&&c.symbol!=="?"?c.symbol:short(c.addr));
-      b.title=c.name;
-      b.onclick=()=>{S.vault=c.addr;S.vaultBlock=c.block;saveCache();renderCandidates();refreshDynamic();};
-      row.appendChild(b);
-    });
-  }
 }
 
 /* ================= VALIDATION MANUELLE ================= */
@@ -483,42 +439,68 @@ async function setManualVault(addr){
   R.add(addr,IF.vault,"totalAssets",[],()=>ok=true);
   await R.flush();
   if(!ok){toast("Ce contrat ne répond pas comme un vault ERC4626");return;}
-  S.vault=addr;S.vaultBlock=null;S.candidates=[];S.donations={given:0n,donors:new Map(),idle:0n,scannedTo:0};
+  S.vault=addr;S.vaultBlock=null;S.eurcv=null;
+  S.marketIndex.clear();S.rewards={tokens:[],scannedTo:0};S.commitment=null;
   sessionStorage.removeItem(CACHE_KEY);
   log("Vault chargé manuellement : "+short(addr),"warn");
-  await refreshDynamic(); saveCache();
+  await initStatic(true);
+  await refreshDynamic();
 }
 
-/* ================= BLOCK DE DEPLOIEMENT (fallback) ================= */
+/* ================= BLOCK DE DEPLOIEMENT ================= */
 async function findDeployBlock(addr){
-  let lo=Math.max(1,S.latest-CFG.scanWindow),hi=S.latest;
-  while(lo<hi){
-    const mid=(lo+hi)>>1;
-    const code=await rpcCall("eth_getCode",[addr,hexBlock(mid)]);
-    if(code&&code!=="0x")hi=mid;else lo=mid+1;
-  }
-  return lo;
+  const fallback=Math.max(1,S.latest-CFG.donWindow);
+  try{
+    const codeNow=await rpcCall("eth_getCode",[addr,"latest"]);
+    if(!codeNow||codeNow==="0x")return fallback;
+    let lo=Math.max(1,S.latest-CFG.scanWindow),hi=S.latest;
+    while(lo<hi){
+      const mid=(lo+hi)>>1;
+      let code;
+      try{code=await rpcCall("eth_getCode",[addr,hexBlock(mid)]);}
+      catch(e){return fallback;}
+      if(code&&code!=="0x")hi=mid;else lo=mid+1;
+    }
+    log("Vault déployé au bloc "+lo.toLocaleString("fr-FR"),"ok");
+    return lo;
+  }catch(e){return fallback;}
 }
 
-/* ================= DONATIONS ================= */
+/* ================= DONATIONS (multi-tokens) ================= */
 async function loadDonations(){
   if(!S.vault||!S.eurcv)return;
-  const token=S.eurcv.address;
-  let from=S.donations.scannedTo?S.donations.scannedTo+1:(S.vaultBlock||await findDeployBlock(S.vault));
   if(!S.latest)S.latest=parseInt(await rpcCall("eth_blockNumber",[]),16);
+
+  // liste des tokens suivis : sous-jacent + MORPHO/wstETH (validés par symbol)
+  const list=[{addr:S.eurcv.address,sym:S.eurcv.symbol,dec:S.eurcv.decimals,isUnderlying:true}];
+  for(const x of CFG.rewardExtra){
+    if(x.addr.toLowerCase()===S.eurcv.address.toLowerCase())continue;
+    const R=reader();let sym=null,dec=null;
+    R.add(x.addr,IF.erc20,"symbol",[],r=>sym=r[0]);
+    R.add(x.addr,IF.erc20,"decimals",[],r=>dec=Number(r[0]));
+    await R.flush();
+    if(sym&&x.expect.test(sym))list.push({addr:x.addr,sym,dec:dec??18,isUnderlying:false});
+    else log("Token reward ignoré (symbol inattendu) : "+short(x.addr),"warn");
+  }
+
+  // fenêtre de scan
+  let from;
+  if(S.rewards.scannedTo){from=S.rewards.scannedTo+1;}
+  else{
+    if(!S.vaultBlock)S.vaultBlock=await findDeployBlock(S.vault);
+    from=Math.max(S.vaultBlock,Math.max(1,S.latest-CFG.donWindow));
+  }
   if(from>S.latest)return;
-  log(`Scan donations ${mb(from)} → ${mb(S.latest)}…`);
+  log(`Scan donations ${mb(from)} → ${mb(S.latest)} (${list.map(t=>t.sym).join(", ")})…`);
+
   const trT0=IF.erc20.getEvent("Transfer").topicHash;
   const depT0=IF.vault.getEvent("Deposit").topicHash;
   const pad=ethers.zeroPadValue(S.vault,32);
-  let transfers=[],deposits=[];
-  try{
-    [transfers,deposits]=await Promise.all([
-      scanLogs(token,[trT0,null,pad],from,S.latest,"Transfer→vault"),
-      scanLogs(S.vault,[depT0],from,S.latest,"Deposit vault")
-    ]);
-  }catch(e){log("Scan donations incomplet : "+e.message,"err");return;}
 
+  // événements Deposit du vault (pour exclure les mints ERC4626)
+  let deposits=[];
+  try{deposits=await scanLogs(S.vault,[depT0],from,S.latest,"Deposit vault");}
+  catch(e){log("Scan Deposit incomplet : "+e.message,"err");}
   const depKey=new Map();
   for(const d of deposits){
     try{
@@ -528,29 +510,62 @@ async function loadDonations(){
       depKey.get(k).add(p.args[0].toLowerCase()+"|"+p.args[2].toString());
     }catch(e){}
   }
+
+  // transferts entrants par token
   const blueL=CFG.morphoBlue.toLowerCase(),vaultL=S.vault.toLowerCase();
-  for(const t of transfers){
-    try{
-      const p=IF.erc20.parseLog({topics:t.topics,data:t.data}); if(!p)continue;
-      const fromA=p.args[0],val=p.args[2];
-      const fl=fromA.toLowerCase();
-      if(fl===blueL||fl===vaultL||fl===ZERO)continue;
-      const k=t.blockNumber+":"+t.transactionIndex;
-      if(depKey.has(k)&&depKey.get(k).has(fl+"|"+val.toString()))continue; // mint ERC4626
-      S.donations.given+=val;
-      const cur=S.donations.donors.get(fromA)||{addr:fromA,given:0n,balance:0n};
-      cur.given+=val;S.donations.donors.set(fromA,cur);
-    }catch(e){}
+  for(const tk of list){
+    let t=S.rewards.tokens.find(x=>x.addr.toLowerCase()===tk.addr.toLowerCase());
+    if(!t){t={...tk,given:0n,vaultBal:0n,donors:new Map()};S.rewards.tokens.push(t);}
+    let transfers=[];
+    try{transfers=await scanLogs(tk.addr,[trT0,null,pad],from,S.latest,"Transfer "+tk.sym+"→vault");}
+    catch(e){log("Scan "+tk.sym+" incomplet : "+e.message,"err");continue;}
+    for(const tr of transfers){
+      try{
+        const p=IF.erc20.parseLog({topics:tr.topics,data:tr.data}); if(!p)continue;
+        const fromA=p.args[0],val=p.args[2],fl=fromA.toLowerCase();
+        if(fl===blueL||fl===vaultL||fl===ZERO)continue;
+        const k=tr.blockNumber+":"+tr.transactionIndex;
+        if(tk.isUnderlying&&depKey.has(k)&&depKey.get(k).has(fl+"|"+val.toString()))continue; // mint
+        t.given+=val;
+        const cur=t.donors.get(fromA)||{addr:fromA,given:0n,balance:0n};
+        cur.given+=val;t.donors.set(fromA,cur);
+      }catch(e){}
+    }
   }
-  S.donations.scannedTo=S.latest;
-  // soldes des donateurs
-  if(S.donations.donors.size){
-    const R=reader();
-    for(const d of S.donations.donors.values())
-      R.add(token,IF.erc20,"balanceOf",[d.addr],r=>d.balance=r[0]);
-    await R.flush();
+  S.rewards.scannedTo=S.latest;
+
+  // soldes : vault + donateurs
+  const R=reader();
+  for(const t of S.rewards.tokens){
+    R.add(t.addr,IF.erc20,"balanceOf",[S.vault],r=>t.vaultBal=r[0]);
+    for(const d of t.donors.values())
+      R.add(t.addr,IF.erc20,"balanceOf",[d.addr],r=>d.balance=r[0]);
   }
-  log(`Donations : ${S.donations.donors.size} donateur(s), ${fU(S.donations.given,S.eurcv.decimals).toLocaleString("fr-FR")} ${S.eurcv.symbol} donnés`,"ok");
+  await R.flush();
+
+  const nDon=[...new Set(S.rewards.tokens.flatMap(t=>[...t.donors.keys()]))].length;
+  log(`Donations : ${nDon} donateur(s) unique(s) sur ${S.rewards.tokens.length} token(s)`,"ok");
+}
+
+/* ================= STATS REWARDS ================= */
+function computeRewardStats(){
+  const toks=S.rewards.tokens;
+  for(const t of toks){
+    t.donorBal=[...t.donors.values()].reduce((s,d)=>s+(d.balance||0n),0n);
+    t.reste=t.isUnderlying?t.donorBal:(t.vaultBal+t.donorBal);
+  }
+  const under=toks.find(t=>t.isUnderlying);
+  const active=toks.filter(t=>t.given>0n||t.donorBal>0n||(!t.isUnderlying&&t.vaultBal>0n));
+  let head=under||toks[0]||null;
+  if(active.length){
+    head=active.find(t=>t.isUnderlying&&(t.given>0n||t.donorBal>0n))
+      ||active.slice().sort((a,b)=>fU(b.reste,b.dec)-fU(a.reste,a.dec))[0];
+  }
+  if(!head){S.rwStats=null;return;}
+  const commitActive=S.commitment&&S.commitment.addr.toLowerCase()===head.addr.toLowerCase();
+  const resteNum=commitActive?Math.max(0,S.commitment.amount-fU(head.given,head.dec)):fU(head.reste,head.dec);
+  const donorsCount=[...new Set(toks.flatMap(t=>[...t.donors.keys()]))].length;
+  S.rwStats={head,resteNum,commitActive,donorsCount,under};
 }
 
 /* ================= CHARGEMENT DYNAMIQUE ================= */
@@ -582,7 +597,6 @@ async function refreshDynamic(){
     if(o.asset==null)throw new Error("Le vault ne répond pas (asset)");
     S.vaultMeta=o;
 
-    // asset = token EURCV ?
     if(!S.eurcv||S.eurcv.address.toLowerCase()!==o.asset.toLowerCase()){
       const R0=reader();const tm={};
       R0.add(o.asset,IF.erc20,"symbol",[],r=>tm.sym=r[0]);
@@ -592,10 +606,10 @@ async function refreshDynamic(){
       log("Token sous-jacent résolu : "+S.eurcv.symbol,"ok");
     }
 
-    /* --- Round 2 : part price, idle, supply queue --- */
+    /* --- Round 2 : prix de part, idle, supply queue --- */
     R=reader();
     R.add(v,IF.vault,"convertToAssets",[10n**BigInt(o.decimals)],r=>o.sharePrice=r[0]);
-    R.add(o.asset,IF.erc20,"balanceOf",[v],r=>S.donations.idle=r[0]);
+    R.add(o.asset,IF.erc20,"balanceOf",[v],r=>S.idle=r[0]);
     const queueIds=[];
     if(o.sqLen!=null){
       for(let i=0;i<o.sqLen;i++)R.add(v,IF.vault,"supplyQueue",[i],r=>queueIds.push(r[0]));
@@ -641,11 +655,12 @@ async function refreshDynamic(){
     }
     await R.flush();
 
-    /* --- Donations (incrémental) --- */
+    /* --- Donations (multi-tokens, incrémental) --- */
     await loadDonations();
 
-    /* --- Calculs dérivés --- */
+    /* --- Calculs dérivés + rendu --- */
     computeDerived();
+    computeRewardStats();
     renderAll();
     saveCache();
   }catch(e){
@@ -695,18 +710,18 @@ function computeDerived(){
     S.apyNet=Math.exp(apr*(1-feeV))-1;
     S.utilVault=Number(gross*10000n/o.totalAssets)/10000*(list.length?list.reduce((s,m)=>s+m.u*fU(m.vaultAssets,dec),0)/Math.max(1e-9,fU(gross,dec)):0);
     S.utilVault=Math.min(1,S.utilVault);
-    S.idlePct=fU(S.donations.idle,dec)/fU(o.totalAssets,dec);
+    S.idlePct=fU(S.idle,dec)/fU(o.totalAssets,dec);
   }
 }
 
 /* ================= RENDU ================= */
 const KPI_DEFS=[
-  {id:"tvl",label:"TVL vault",fmt:v=>fmtEUR(v,true)},
+  {id:"tvl",label:"TVL vault",fmt:v=>fmtEUR(v,"€")},
   {id:"apy",label:"APY net estimé",fmt:v=>fmtPct(v*100)},
-  {id:"share",label:"Prix de la part",fmt:v=>v.toLocaleString("fr-FR",{maximumFractionDigits:6})+" EURCV"},
+  {id:"share",label:"Prix de la part",fmt:v=>v.toLocaleString("fr-FR",{maximumFractionDigits:6})+" "+(S.eurcv?S.eurcv.symbol:"EURCV")},
   {id:"util",label:"Utilisation pondérée",fmt:v=>fmtPct(v*100)},
-  {id:"borrow",label:"Total emprunté (marchés EURCV)",fmt:v=>fmtEUR(v,true)},
-  {id:"rw",label:"Rewards restants (donation)",fmt:v=>fmtEUR(v,true)},
+  {id:"borrow",label:"Total emprunté (marchés EURCV)",fmt:v=>fmtEUR(v,"€")},
+  {id:"rw",label:"Rewards restants (donation)",fmt:v=>S.rwStats?fmtTok(v,S.rwStats.head.sym):"—"},
 ];
 function buildKpis(){
   document.getElementById("kpis").innerHTML=KPI_DEFS.map(k=>`
@@ -727,7 +742,6 @@ function setVal(id,num,fmt){
 
 function renderAll(){
   const o=S.vaultMeta,dec=S.eurcv.decimals;
-  /* header chips */
   document.getElementById("vaultName").innerHTML=esc((o.name||"Vault EURCV").toUpperCase().replace(/(EURCV)/,'<span class="hl">$1</span>'));
   const ach=document.getElementById("vaultAddrChip");
   ach.textContent="vault : "+short(S.vault);ach.dataset.copy=S.vault;ach.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(S.vault);toast("Adresse vault copiée ✓");};
@@ -738,73 +752,91 @@ function renderAll(){
   mch.textContent="morpho blue : "+short(CFG.morphoBlue);mch.dataset.copy=CFG.morphoBlue;
   mch.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(CFG.morphoBlue);toast("Adresse Morpho Blue copiée ✓");};
 
-  /* KPIs */
   const tvl=fU(o.totalAssets,dec);
-  const donorsBal=[...S.donations.donors.values()].reduce((s,d)=>s+(d.balance||0n),0n);
-  const rw=S.commitment!=null?Math.max(0,S.commitment-fU(S.donations.given,dec)):fU(donorsBal,dec);
   setVal("tvl",tvl,KPI_DEFS[0].fmt);
   setVal("apy",S.apyNet??NaN,KPI_DEFS[1].fmt);
   setVal("share",o.sharePrice?fU(o.sharePrice,dec):NaN,KPI_DEFS[2].fmt);
   setVal("util",S.utilVault??NaN,KPI_DEFS[3].fmt);
   setVal("borrow",S.borrowTot?fU(S.borrowTot,dec):0,KPI_DEFS[4].fmt);
-  setVal("rw",rw,KPI_DEFS[5].fmt);
+  setVal("rw",S.rwStats?S.rwStats.resteNum:NaN,KPI_DEFS[5].fmt);
   sub("tvl",`${fU(o.totalSupply,o.decimals??dec).toLocaleString("fr-FR",{maximumFractionDigits:0})} parts`);
   sub("apy",`brut ${fmtPct((S.aprGross??0)*100)} · frais ${fmtPct((S.feeV??0)*100,0)}`);
   sub("share","convertToAssets(1 part)");
   sub("util",`idle ${fmtPct((S.idlePct??0)*100)}`);
   sub("borrow",S.mkts.length+" marchés EURCV");
-  sub("rw",S.commitment!=null?"engagement déclaré − donné":"soldes des donateurs");
+  sub("rw",S.rwStats?(S.rwStats.commitActive?"engagement déclaré − donné":(S.rwStats.head.isUnderlying?"soldes des donateurs":"vault + donateurs")):"—");
 
-  renderRewards(donorsBal);
+  renderRewards();
   renderAlloc();
   renderMarkets();
 }
 function sub(id,txt){const el=document.getElementById("ks-"+id);if(el)el.textContent=txt;}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
-function renderRewards(donorsBal){
-  const dec=S.eurcv.decimals,sym=S.eurcv.symbol;
-  const given=fU(S.donations.given,dec),idle=fU(S.donations.idle,dec);
-  const donors=[...S.donations.donors.values()].sort((a,b)=>Number(b.given-a.given));
-  const reste=S.commitment!=null?Math.max(0,S.commitment-given):fU(donorsBal,dec);
-  const subTxt=S.commitment!=null
-    ? `Engagement déclaré ${fmtEUR(S.commitment,true)} − donations déjà transférées on-chain.`
-    : `Somme des soldes on-chain des adresses ayant déjà fait une donation au vault (capacité restante du programme).`;
+function renderRewards(){
+  const st=S.rwStats;
+  if(!st){document.getElementById("rewardsBody").innerHTML='<p class="note">Scan des donations en cours…</p>';return;}
+  const {head,commitActive,donorsCount}=st;
+  const subTxt=commitActive
+    ?`Engagement déclaré ${fmtTok(S.commitment.amount,head.sym)} − donations déjà transférées on-chain (${head.sym}).`
+    :head.isUnderlying
+      ?"Somme des soldes on-chain des adresses donatrices. Les donations déjà reçues sont immédiatement intégrées au prix de la part (idle inclus dans totalAssets)."
+      :`Solde du vault en ${head.sym} (en attente de swap/allocation, hors prix de part) + soldes on-chain des adresses donatrices.`;
+
+  const toks=S.rewards.tokens;
+  const donorsAll=[];
+  for(const t of toks)for(const d of t.donors.values())donorsAll.push({...d,tok:t});
+  donorsAll.sort((a,b)=>fU(b.given,b.tok.dec)-fU(a.given,a.tok.dec));
+
   document.getElementById("rewardsBody").innerHTML=`
     <div class="rw-hero">
-      <div class="rw-label">Reste à distribuer · ${sym}</div>
-      <div class="rw-big">${fmtEUR(reste,true)}</div>
+      <div class="rw-label">Reste à distribuer · ${head.sym}</div>
+      <div class="rw-big">${fmtTok(st.resteNum,head.sym)}</div>
       <div class="rw-sub">${subTxt}</div>
     </div>
     <div class="rw-stats">
-      <div><label>Donations déjà reçues (on-chain)</label><b>${fmtEUR(given,true)}</b></div>
-      <div><label>Idle vault (non alloué)</label><b>${fmtEUR(idle,true)}</b></div>
-      <div><label>Donateurs détectés</label><b>${donors.length}</b></div>
+      <div><label>Donations reçues · ${head.sym}</label><b>${fmtTok(fU(head.given,head.dec),head.sym)}</b></div>
+      <div><label>${head.isUnderlying?"Idle vault (déjà dans le prix de part)":"Dans le vault (non distribué)"}</label>
+        <b>${head.isUnderlying?fmtTok(fU(S.idle,st.under.dec),st.under.sym):fmtTok(fU(head.vaultBal,head.dec),head.sym)}</b></div>
+      <div><label>Donateurs détectés</label><b>${donorsCount}</b></div>
     </div>
-    <div class="rw-commit">
-      <span>Engagement total déclaré (optionnel) :</span>
-      <input id="commitInput" placeholder="ex. 250 000" value="${S.commitment??""}">
-      <button class="btn" id="commitApply">Appliquer</button>
-      ${S.commitment!=null?'<button class="btn" id="commitClear">✕</button>':""}
-    </div>
-    ${donors.length?`<div class="tbl-wrap"><table>
-      <thead><tr><th>Donateur</th><th class="num">Total donné</th><th class="num">Solde restant</th><th style="width:90px"></th></tr></thead>
-      <tbody>${donors.map(d=>{
-        const g=fU(d.given,dec),b=fU(d.balance||0n,dec);
-        const mx=Math.max(1,...donors.map(x=>fU(x.balance||0n,dec)));
-        return `<tr><td><span class="addr" data-copy="${d.addr}" title="cliquer pour copier">${short(d.addr)}</span></td>
-        <td class="num">${fmtEUR(g,true)}</td><td class="num ${b>0?'pos':''}">${fmtEUR(b,true)}</td>
-        <td><span class="util"><i class="g" data-w="${Math.round(b/mx*100)}"></i></span></td></tr>`;}).join("")}
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Token</th><th class="num">Déjà donné</th><th class="num">Solde vault</th><th class="num">Reste donateurs</th><th class="num">Reste à distribuer</th></tr></thead>
+      <tbody>${toks.map(t=>`<tr${t===head?' class="in-vault"':''}>
+        <td><b>${esc(t.sym)}</b>${t.isUnderlying?' <span class="tag g" style="margin-left:6px">sous-jacent</span>':''}</td>
+        <td class="num">${fmtTok(fU(t.given,t.dec),t.sym)}</td>
+        <td class="num">${t.isUnderlying?`<span class="dim" title="inclus dans totalAssets">${fmtTok(fU(S.idle,t.dec),t.sym)} · dans les parts</span>`:fmtTok(fU(t.vaultBal,t.dec),t.sym)}</td>
+        <td class="num">${fmtTok(fU(t.donorBal,t.dec),t.sym)}</td>
+        <td class="num pos"><b>${fmtTok(fU(t.reste,t.dec),t.sym)}</b></td>
+      </tr>`).join("")}
+      </tbody></table></div>
+    ${donorsAll.length?`
+    <div class="tbl-wrap" style="margin-top:10px"><table>
+      <thead><tr><th>Token</th><th>Donateur</th><th class="num">Total donné</th><th class="num">Solde restant</th></tr></thead>
+      <tbody>${donorsAll.map(d=>`<tr>
+        <td>${esc(d.tok.sym)}</td>
+        <td><span class="addr" data-copy="${d.addr}" title="cliquer pour copier">${short(d.addr)}</span></td>
+        <td class="num">${fmtTok(fU(d.given,d.tok.dec),d.tok.sym)}</td>
+        <td class="num ${d.balance>0n?'pos':''}">${fmtTok(fU(d.balance||0n,d.tok.dec),d.tok.sym)}</td>
+      </tr>`).join("")}
       </tbody></table></div>`
     :`<p class="note">Aucun transfert de type « donation » détecté sur la fenêtre scannée (les mints ERC4626 et les retraits Morpho Blue sont exclus par rapprochement avec les événements Deposit et par filtrage d'adresse).</p>`}
-    <p class="note">Modèle donation : les incentives sont versées par transfert direct vers le vault ; une fois reçues, elles appartiennent immédiatement aux porteurs de parts via le prix de la part (le solde « idle » est inclus dans totalAssets). Le reste à distribuer est donc évalué côté programme : soldes des donateurs, ou engagement déclaré − déjà donné.</p>`;
+    <div class="rw-commit">
+      <span>Engagement total déclaré pour ${esc(head.sym)} (optionnel) :</span>
+      <input id="commitInput" placeholder="ex. 250 000" value="${commitActive?S.commitment.amount:""}">
+      <button class="btn" id="commitApply">Appliquer</button>
+      ${S.commitment?'<button class="btn" id="commitClear">✕</button>':""}
+    </div>
+    <p class="note">Modèle donation : les incentives sont versées par transfert direct vers le vault. Tokens suivis : ${toks.map(t=>esc(t.sym)).join(", ")}. Les donations en sous-jacent appartiennent immédiatement aux porteurs de parts via le prix de la part ; les autres tokens restent à distribuer tant qu'ils ne sont pas swap/alloués. Le reste à distribuer est évalué côté programme : solde vault + soldes des donateurs, ou engagement déclaré − déjà donné.</p>`;
+
   document.getElementById("commitApply").onclick=()=>{
     const raw=document.getElementById("commitInput").value.replace(/\s/g,"").replace(",",".");
     const n=parseFloat(raw);
-    if(isFinite(n)&&n>0){S.commitment=n;renderAll();toast("Engagement appliqué ✓");}else toast("Montant invalide");
+    if(isFinite(n)&&n>0){S.commitment={addr:head.addr,amount:n};computeRewardStats();renderAll();toast("Engagement appliqué ✓");}
+    else toast("Montant invalide");
   };
   const cc=document.getElementById("commitClear");
-  if(cc)cc.onclick=()=>{S.commitment=null;renderAll();};
+  if(cc)cc.onclick=()=>{S.commitment=null;computeRewardStats();renderAll();};
   animateBars(document.getElementById("rewardsBody"));
 }
 
@@ -812,7 +844,7 @@ function renderAlloc(){
   const dec=S.eurcv.decimals,o=S.vaultMeta;
   const total=fU(o.totalAssets,dec);
   const items=S.mkts.filter(m=>m.vaultAssets>0n).map(m=>({name:m.collSym,val:fU(m.vaultAssets,dec)}));
-  const idle=fU(S.donations.idle,dec);
+  const idle=fU(S.idle,dec);
   if(idle>0)items.push({name:"Idle (non alloué)",val:idle,idle:true});
   items.sort((a,b)=>b.val-a.val);
   document.getElementById("allocTag").textContent=items.length+" positions";
@@ -823,7 +855,7 @@ function renderAlloc(){
     ${items.map((it,i)=>`<div class="alloc-row">
       <span class="sw" style="background:${it.idle?'rgba(255,255,255,.2)':PALETTE[i%PALETTE.length]}"></span>
       <span class="alloc-name">${esc(it.name)}</span>
-      <span class="alloc-val">${fmtEUR(it.val,true)}</span>
+      <span class="alloc-val">${fmtEUR(it.val)}</span>
       <span class="alloc-pct">${fmtPct(it.val/total*100,1)}</span>
     </div>`).join("")}`;
   animateBars(document.getElementById("allocPanel"));
@@ -833,7 +865,7 @@ function renderMarkets(){
   const dec=S.eurcv.decimals;
   document.getElementById("marketsTag").textContent=S.mkts.length+" marchés · "+S.mkts.filter(m=>m.vaultAssets>0n).length+" alloués";
   if(!S.mkts.length){
-    document.getElementById("marketsBody").innerHTML='<p class="note">Aucun marché EURCV trouvé sur la fenêtre scannée. Essayez un rescan complet ou collez l\'adresse du vault.</p>';return;
+    document.getElementById("marketsBody").innerHTML='<p class="note">Aucun marché EURCV trouvé sur la fenêtre scannée. Essayez un rescan complet.</p>';return;
   }
   document.getElementById("marketsBody").innerHTML=`
   <div class="tbl-wrap"><table>
@@ -845,19 +877,19 @@ function renderMarkets(){
     <tbody>${S.mkts.map(m=>{
       const inV=m.vaultAssets>0n;
       const mSup=fU(m.supA,dec),mBor=fU(m.borA,dec);
-      const capStr=m.cap==null?"—":(m.cap>=2n**128n?"∞":fmtEUR(fU(m.cap,dec),true));
+      const capStr=m.cap==null?"—":(m.cap>=2n**128n?"∞":fmtEUR(fU(m.cap,dec)));
       const share=mSup>0?fU(m.vaultAssets,dec)/mSup:0;
       return `<tr class="${inV?'in-vault':''}" title="market id : ${m.id}">
         <td><b>${esc(m.collSym)}</b> <span class="dim">${short(m.params.collateralToken)}</span>${inV?' <span class="tag" style="margin-left:6px">alloué</span>':''}</td>
         <td class="num">${fmtPct(Number(m.params.lltv)/1e16,0)}</td>
         <td class="num dim">${capStr}</td>
-        <td class="num">${fmtEUR(mSup,true)}</td>
-        <td class="num">${fmtEUR(mBor,true)}</td>
+        <td class="num">${fmtEUR(mSup)}</td>
+        <td class="num">${fmtEUR(mBor)}</td>
         <td><span class="util"><i class="${m.u>0.9?'hi':''}" data-w="${Math.round(m.u*100)}"></i></span><span class="num" style="font-family:var(--mono);font-size:12px">${fmtPct(m.u*100,1)}</span></td>
         <td class="num">${m.borrowAPR?fmtPct(m.borrowAPR*100):"—"}</td>
         <td class="num ${m.supplyAPR>0?'pos':''}">${m.supplyAPR?fmtPct(m.supplyAPR*100):"—"}</td>
         <td class="num dim">${inV?fmtPct(share*100,1):"—"}</td>
-        <td><a class="ext" target="_blank" rel="noopener" href="https://app.morpho.org/market?id=${m.id}&network=base" title="Ouvrir sur app.morpho.org">↗</a></td>
+        <td><a class="ext" target="_blank" rel="noopener" href="https://app.morpho.org/market?id=${m.id}&network=ethereum" title="Ouvrir sur app.morpho.org">↗</a></td>
       </tr>`;}).join("")}
     </tbody></table></div>
   <p class="note">Taux lus depuis l'IRM de chaque marché (borrowRateView) + intérêts courus recalculés depuis lastUpdate. APR supply = APR borrow × utilisation × (1 − fee marché). Liens vers app.morpho.org (off-chain).</p>`;
@@ -871,10 +903,8 @@ function animateBars(root){
 }
 
 function renderNoVault(){
-  document.getElementById("rewardsBody").innerHTML='<p class="note">Aucun vault EURCV détecté automatiquement sur la fenêtre scannée. Collez l\'adresse du vault Steakhouse EURCV dans le champ « override » en haut à droite.</p>';
+  document.getElementById("rewardsBody").innerHTML='<p class="note">Aucun vault chargé.</p>';
   document.getElementById("allocBody").innerHTML='<p class="note">En attente d\'un vault.</p>';
-  document.getElementById("marketsBody").innerHTML=S.mkts.length?"":'<p class="note">En attente de marchés…</p>';
-  if(S.mkts.length)renderMarkets();
 }
 
 /* ================= BOOT ================= */
@@ -891,10 +921,16 @@ async function loadEthers(){
   buildKpis();
   try{await loadEthers();}catch(e){fatal(e.message);return;}
   initIfaces();
+  document.getElementById("manualAddr").value=CFG.knownVault;
   document.getElementById("refreshBtn").onclick=()=>refreshDynamic();
   document.getElementById("manualGo").onclick=()=>{const a=document.getElementById("manualAddr").value.trim();if(a)setManualVault(a);};
   document.getElementById("manualAddr").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("manualGo").click();});
-  document.getElementById("rescanBtn").onclick=async()=>{log("Rescan complet demandé…","warn");S.marketIndex.clear();S.candidates=[];S.vault=null;S.donations={given:0n,donors:new Map(),idle:0n,scannedTo:0};await initStatic(true);await refreshDynamic();};
+  document.getElementById("rescanBtn").onclick=async()=>{
+    log("Rescan complet demandé…","warn");
+    S.marketIndex.clear();S.vaultBlock=null;S.vault=CFG.knownVault;S.eurcv=null;
+    S.rewards={tokens:[],scannedTo:0};S.commitment=null;
+    await initStatic(true);await refreshDynamic();
+  };
   try{
     await initStatic(false);
     await refreshDynamic();
