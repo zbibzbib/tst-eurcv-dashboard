@@ -1,245 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Steakhouse EURCV · Vault Morpho Ethereum — Dashboard on-chain</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Steakhouse EURCV — Morpho</title>
 <style>
-:root{
-  --bg:#08080c; --panel:#12121a; --panel2:#0d0d13; --line:#23232f; --line2:#31313f;
-  --txt:#ecebe7; --muted:#9a99a6; --dim:#6b6a78;
-  --ember:#ff6a3d; --ember2:#ffb13d; --blue:#5b8cff; --green:#41dfa0; --red:#ff5d6c;
-  --mono:'IBM Plex Mono',monospace; --disp:'Unbounded',sans-serif; --body:'Space Grotesk',sans-serif;
+:root {
+  --bg: #f5f5f3;
+  --surface: #ffffff;
+  --surface-soft: #fafaf8;
+  --text: #171816;
+  --muted: #6f736c;
+  --line: #e5e6e1;
+  --line-strong: #d4d6cf;
+  --accent: #1d6b4f;
+  --accent-soft: #e9f4ef;
+  --danger: #b33a3a;
+  --warning: #9a6417;
+  --shadow: 0 12px 36px rgba(27, 30, 24, .06);
+  --radius: 18px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
-.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:
-   radial-gradient(900px 500px at 12% -10%, rgba(255,106,61,.13), transparent 60%),
-   radial-gradient(800px 480px at 88% -10%, rgba(91,140,255,.10), transparent 60%),
-   linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
-   linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
-  background-size:auto,auto,44px 44px,44px 44px;
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
 }
-.wrap{max-width:1240px;margin:0 auto;padding:0 22px 60px}
-header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px 0 10px}
-.brand{display:flex;gap:14px;align-items:center}
-.mark{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:20px;color:#1a0d06;
-  background:linear-gradient(135deg,var(--ember2),var(--ember));box-shadow:0 6px 24px rgba(255,106,61,.35)}
-.brand-line{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--muted)}
-.brand-line .x{color:var(--ember)}
-.brand-sub{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.08em;margin-top:3px}
-.top-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.chip{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-.chip.click{cursor:pointer;transition:.15s}.chip.click:hover{border-color:var(--ember);color:var(--txt)}
-.chip .rm{cursor:pointer;color:var(--red);margin-left:4px}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
-.dot.err{background:var(--red);box-shadow:0 0 8px var(--red)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.btn{font-family:var(--mono);font-size:11.5px;color:var(--txt);background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:8px 14px;cursor:pointer;transition:.15s;letter-spacing:.04em}
-.btn:hover{border-color:var(--ember);box-shadow:0 0 18px rgba(255,106,61,.22);transform:translateY(-1px)}
-.btn.icon{font-size:15px;padding:6px 12px;line-height:1}
-.btn.loading{animation:spin 1s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.15em}
-.switch input{display:none}
-.slider{width:34px;height:18px;border-radius:99px;background:var(--panel);border:1px solid var(--line2);position:relative;transition:.2s}
-.slider::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--dim);transition:.2s}
-.switch input:checked+.slider{border-color:var(--ember);background:rgba(255,106,61,.15)}
-.switch input:checked+.slider::after{left:18px;background:var(--ember);box-shadow:0 0 8px var(--ember)}
-
-.vault-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin:26px 0 8px}
-h1{font-family:var(--disp);font-weight:800;font-size:clamp(26px,4vw,42px);letter-spacing:.01em;line-height:1.1;text-transform:uppercase}
-h1 .hl{background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
-.chips-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.inline-add{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
-.inline-add input{font-family:var(--mono);font-size:11px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 12px;width:300px;outline:none}
-.inline-add input:focus{border-color:var(--blue)}
-.inline-add span{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
-
-.logstrip{font-family:var(--mono);font-size:10.5px;color:var(--dim);background:rgba(13,13,19,.7);border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin:16px 0;max-height:64px;overflow-y:auto}
-.logstrip div{padding:1px 0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-.logstrip .ok{color:var(--green)} .logstrip .warn{color:var(--ember2)} .logstrip .err{color:var(--red)}
-
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
-.kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;transition:.2s;position:relative;overflow:hidden}
-.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,106,61,.6),transparent);opacity:0;transition:.25s}
-.kpi:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 12px 32px rgba(0,0,0,.4)}
-.kpi:hover::before{opacity:1}
-.kpi-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
-.kpi-value{font-family:var(--mono);font-weight:600;font-size:21px;letter-spacing:-.01em}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
-
-.grid-main{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-bottom:14px}
-@media(max-width:940px){.grid-main{grid-template-columns:1fr}}
-.panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:22px;transition:border-color .2s}
-.panel:hover{border-color:var(--line2)}
-.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.panel-head h2{font-family:var(--disp);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
-.tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ember2);border:1px solid rgba(255,177,61,.35);background:rgba(255,177,61,.07);padding:4px 9px;border-radius:99px}
-.tag.b{color:var(--blue);border-color:rgba(91,140,255,.35);background:rgba(91,140,255,.07)}
-.tag.g{color:var(--green);border-color:rgba(65,223,160,.35);background:rgba(65,223,160,.07)}
-
-.rw-hero{padding:18px;border:1px solid var(--line);border-radius:14px;background:radial-gradient(400px 120px at 20% 0%,rgba(255,106,61,.10),transparent),var(--panel2);margin-bottom:14px}
-.rw-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
-.rw-big{font-family:var(--disp);font-weight:800;font-size:clamp(24px,3.2vw,36px);margin:8px 0 6px;background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
-.rw-sub{font-size:11.5px;color:var(--muted)}
-.rw-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-@media(max-width:640px){.rw-stats{grid-template-columns:1fr}}
-.rw-stats>div{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.rw-stats label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:6px}
-.rw-stats b{font-family:var(--mono);font-size:15px;font-weight:600}
-.rw-commit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:14px 0}
-.rw-commit input{font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:7px 10px;width:130px;outline:none}
-.note{font-size:10.5px;color:var(--dim);margin-top:12px;line-height:1.6}
-
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:11px 10px;border-bottom:1px solid rgba(35,35,47,.6);vertical-align:middle}
-tbody tr{transition:background .15s}
-tbody tr:hover{background:rgba(255,255,255,.025)}
-td.num,th.num{text-align:right;font-family:var(--mono)}
-td.num{font-size:12.5px}
-tr.in-vault td:first-child{box-shadow:inset 3px 0 0 var(--ember)}
-.dim{color:var(--dim)} .pos{color:var(--green)}
-.addr{font-family:var(--mono);font-size:11px;color:var(--blue);cursor:pointer;border-bottom:1px dotted rgba(91,140,255,.4)}
-.addr:hover{color:var(--txt)}
-a.ext{color:var(--muted);text-decoration:none;font-size:14px;transition:.15s}
-a.ext:hover{color:var(--ember)}
-.util{width:74px;height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
-.util i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--ember2));width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
-.util i.hi{background:linear-gradient(90deg,var(--ember2),var(--red))}
-
-.alloc-bar{display:flex;height:16px;border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-bottom:16px;background:var(--panel2)}
-.alloc-bar i{display:block;height:100%;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
-.alloc-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(35,35,47,.55);font-size:12.5px}
-.alloc-row:last-child{border-bottom:none}
-.sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.alloc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.alloc-val{font-family:var(--mono);font-size:12px}
-.alloc-pct{font-family:var(--mono);font-size:11px;color:var(--muted);width:58px;text-align:right}
-
-.sk{position:relative;overflow:hidden;background:rgba(255,255,255,.05);border-radius:6px;color:transparent!important}
-.sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:sh 1.4s infinite}
-@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
-
-footer{margin-top:26px;border-top:1px solid var(--line);padding-top:20px;display:grid;grid-template-columns:1.4fr 1fr;gap:26px}
-@media(max-width:800px){footer{grid-template-columns:1fr}}
-footer h3{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
-footer p,footer li{font-size:11px;color:var(--muted);line-height:1.7}
-footer ul{padding-left:16px}
-footer .mono{font-family:var(--mono);font-size:10px;color:var(--dim);word-break:break-all}
-#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel);border:1px solid var(--ember);color:var(--txt);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:99;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.banner-err{background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.4);color:var(--red);border-radius:14px;padding:14px 18px;font-size:12.5px;margin:14px 0;font-family:var(--mono)}
-::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:99px}
+button, input { font: inherit; }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible {
+  outline: 3px solid rgba(29, 107, 79, .2);
+  outline-offset: 2px;
+}
+.shell { width: min(1200px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 64px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 34px; }
+.identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo {
+  width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--text); color: white; font-size: 15px; font-weight: 750; letter-spacing: -.04em;
+}
+.eyebrow { color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+.product { margin-top: 1px; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+.status, .pill {
+  min-height: 34px; display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px;
+  border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.72);
+  color: var(--muted); font-family: var(--mono); font-size: 11px;
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #b2b5ae; }
+.status.ok .status-dot { background: var(--accent); }
+.status.error .status-dot { background: var(--danger); }
+.button {
+  min-height: 36px; border: 1px solid var(--line-strong); border-radius: 10px; padding: 8px 13px;
+  background: var(--surface); color: var(--text); cursor: pointer; font-weight: 650;
+  transition: border-color .16s, transform .16s, background .16s;
+}
+.button:hover { border-color: #aeb2a9; background: var(--surface-soft); }
+.button:active { transform: translateY(1px); }
+.button:disabled { cursor: wait; opacity: .6; }
+.button.primary { background: var(--text); border-color: var(--text); color: white; }
+.hero { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin-bottom: 22px; }
+.hero h1 { margin: 0; font-size: clamp(30px, 5vw, 54px); line-height: 1.02; letter-spacing: -.055em; }
+.hero p { margin: 10px 0 0; color: var(--muted); max-width: 700px; }
+.hero-meta { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.copy { cursor: pointer; }
+.copy:hover { color: var(--text); border-color: var(--line-strong); }
+.grid-kpi { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 22px 0 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.kpi { padding: 19px; min-height: 126px; display: flex; flex-direction: column; justify-content: space-between; }
+.kpi-label { color: var(--muted); font-size: 12px; font-weight: 650; }
+.kpi-value { margin: 12px 0 4px; font-size: clamp(23px, 2.4vw, 31px); font-weight: 730; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.kpi-sub { color: var(--muted); font-size: 11px; }
+.main-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; margin: 16px 0; }
+.section { padding: 21px; }
+.section-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+.section-head h2 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+.section-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+.badge { display: inline-flex; padding: 5px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 10px; font-weight: 700; white-space: nowrap; }
+.allocation-bar { display: flex; height: 11px; overflow: hidden; border-radius: 99px; background: #eceee9; margin-bottom: 16px; }
+.allocation-bar span { display: block; min-width: 0; }
+.list { display: grid; gap: 2px; }
+.list-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.list-row:last-child { border-bottom: 0; }
+.list-name { display: flex; align-items: center; gap: 9px; min-width: 0; font-weight: 650; }
+.swatch { width: 9px; height: 9px; border-radius: 3px; flex: 0 0 auto; }
+.list-value, .list-pct { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.list-pct { min-width: 48px; color: var(--muted); text-align: right; }
+.reward-total { padding: 17px; border-radius: 14px; background: var(--surface-soft); border: 1px solid var(--line); margin-bottom: 13px; }
+.reward-total small { display: block; color: var(--muted); font-size: 11px; }
+.reward-total strong { display: block; margin-top: 5px; font-size: 26px; letter-spacing: -.035em; }
+.reward-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.reward-row:last-child { border-bottom: 0; }
+.reward-row span:nth-child(n+2) { font-family: var(--mono); font-size: 11px; text-align: right; }
+.donor-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 16px; }
+.input { width: 100%; min-height: 38px; border: 1px solid var(--line-strong); border-radius: 10px; background: white; color: var(--text); padding: 8px 11px; font-family: var(--mono); font-size: 11px; }
+.donor-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.donor-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 9px; border-radius: 999px; background: var(--surface-soft); border: 1px solid var(--line); font-family: var(--mono); font-size: 10px; }
+.donor-chip button { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 0 1px; }
+.table-card { overflow: hidden; }
+.table-head { padding: 21px 21px 0; }
+.table-wrap { overflow-x: auto; padding: 0 8px 8px; }
+table { width: 100%; min-width: 980px; border-collapse: collapse; }
+th { padding: 12px 13px; border-bottom: 1px solid var(--line-strong); color: var(--muted); font-size: 10px; letter-spacing: .055em; text-transform: uppercase; text-align: left; white-space: nowrap; }
+td { padding: 14px 13px; border-bottom: 1px solid var(--line); white-space: nowrap; font-size: 12px; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: #fbfbf9; }
+.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.market-name { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.market-id { color: var(--muted); font-family: var(--mono); font-size: 10px; }
+.progress { width: 78px; height: 6px; border-radius: 99px; background: #eceee9; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 8px; }
+.progress i { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
+.link { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+.empty, .loading { color: var(--muted); padding: 18px 0; }
+.note { margin-top: 14px; color: var(--muted); font-size: 11px; }
+details.diagnostics { margin-top: 16px; background: transparent; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+details.diagnostics summary { cursor: pointer; padding: 13px 15px; color: var(--muted); font-weight: 650; list-style: none; }
+details.diagnostics summary::-webkit-details-marker { display: none; }
+.diag-actions { display: flex; justify-content: flex-end; padding: 0 14px 12px; }
+.diag-log { max-height: 260px; overflow: auto; border-top: 1px solid var(--line); background: #20221f; color: #d8dbd4; padding: 13px 15px; font-family: var(--mono); font-size: 10px; }
+.diag-line { padding: 2px 0; white-space: pre-wrap; word-break: break-word; }
+.diag-line.ok { color: #86d2b4; }
+.diag-line.warn { color: #e0bb79; }
+.diag-line.err { color: #ef9494; }
+.footer { display: flex; justify-content: space-between; gap: 14px; margin-top: 20px; color: var(--muted); font-size: 10px; }
+.toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 12px); opacity: 0; pointer-events: none; transition: .18s; padding: 9px 13px; border-radius: 10px; background: var(--text); color: white; font-size: 12px; box-shadow: var(--shadow); }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.demo-banner { display: none; margin-bottom: 14px; padding: 10px 12px; border: 1px solid #dfc48e; background: #fff7e8; color: #765220; border-radius: 12px; font-size: 12px; }
+body.demo .demo-banner { display: block; }
+@media (max-width: 900px) {
+  .grid-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .main-grid { grid-template-columns: 1fr; }
+  .hero { grid-template-columns: 1fr; align-items: start; }
+  .hero-meta { justify-content: flex-start; }
+}
+@media (max-width: 620px) {
+  .shell { width: min(100% - 20px, 1200px); padding-top: 16px; }
+  .topbar { align-items: flex-start; margin-bottom: 26px; }
+  .toolbar .pill { display: none; }
+  .grid-kpi { grid-template-columns: 1fr; }
+  .kpi { min-height: 108px; }
+  .section { padding: 17px; }
+  .donor-form { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; }
+}
 </style>
 </head>
 <body>
-<div class="bg" aria-hidden="true"></div>
-<div class="wrap">
+<div class="shell">
+  <header class="topbar">
+    <div class="identity">
+      <div class="logo">S</div>
+      <div>
+        <div class="eyebrow">Morpho · Ethereum</div>
+        <div class="product">Steakhouse EURCV</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="status" id="rpcStatus"><span class="status-dot"></span><span id="rpcHost">Connexion…</span></div>
+      <div class="pill" id="blockPill">Bloc —</div>
+      <button class="button primary" id="refreshButton" type="button">Actualiser</button>
+    </div>
+  </header>
 
-<header class="top">
-  <div class="brand">
-    <div class="mark">S</div>
+  <div class="demo-banner">Mode démonstration local : données simulées, aucun appel RPC.</div>
+
+  <section class="hero">
     <div>
-      <div class="brand-line">MORPHO BLUE <span class="x">×</span> STEAKHOUSE FINANCIAL</div>
-      <div class="brand-sub">VAULT EURCV · ETHEREUM · VALEURS INSTANTANÉES ON-CHAIN</div>
+      <div class="eyebrow">Vault ERC-4626</div>
+      <h1 id="vaultName">Steakhouse EURCV</h1>
+      <p>Vue synthétique des actifs, allocations Morpho, taux estimés et soldes d’incentives suivis.</p>
     </div>
-  </div>
-  <div class="top-tools">
-    <div class="chip" id="rpcChip"><span class="dot" id="rpcDot"></span><span id="rpcHost">RPC : connexion…</span></div>
-    <div class="chip" id="blockChip">bloc —</div>
-    <label class="switch"><input type="checkbox" id="liveToggle" checked><span class="slider"></span><span>LIVE</span></label>
-    <button class="btn icon" id="refreshBtn" title="Rafraîchir maintenant">⟳</button>
-  </div>
-</header>
-
-<section class="vault-head">
-  <div class="vh-left">
-    <h1 id="vaultName">STEAKHOUSE <span class="hl">EURCV</span></h1>
-    <div class="chips-row">
-      <span class="chip click" id="vaultAddrChip">vault : …</span>
-      <span class="chip" id="assetChip">actif : …</span>
-      <span class="chip" id="curatorChip">curator : …</span>
-      <span class="chip" id="feeChip">fee vault : …</span>
+    <div class="hero-meta">
+      <button class="pill copy" id="vaultAddress" type="button">Vault —</button>
+      <div class="pill" id="assetMeta">Actif —</div>
+      <div class="pill" id="feeMeta">Frais —</div>
     </div>
-    <div class="inline-add">
-      <span>Adresses donatrices (rewards) :</span>
-      <div class="chips-row" id="donorChips" style="margin-top:0"></div>
-      <input id="donorInput" placeholder="0x… adresse du programme / treasury" spellcheck="false">
-      <button class="btn" id="donorAdd">Ajouter</button>
-    </div>
-  </div>
-</section>
-
-<div class="logstrip" id="logStrip"><div>▸ initialisation…</div></div>
-<div id="fatalBox"></div>
-
-<section class="kpis" id="kpis"></section>
-
-<main class="grid-main">
-  <section class="panel" id="rewardsPanel">
-    <div class="panel-head"><h2>Incentives · modèle donation</h2><span class="tag">soldes instantanés</span></div>
-    <div id="rewardsBody"><div class="sk" style="height:180px"></div></div>
   </section>
-  <section class="panel" id="allocPanel">
-    <div class="panel-head"><h2>Allocation du vault</h2><span class="tag b" id="allocTag">…</span></div>
-    <div id="allocBody"><div class="sk" style="height:180px"></div></div>
+
+  <section class="grid-kpi" id="kpiGrid">
+    <article class="card kpi"><div class="kpi-label">Actifs totaux</div><div class="kpi-value" id="kpiTvl">—</div><div class="kpi-sub" id="kpiTvlSub">Chargement</div></article>
+    <article class="card kpi"><div class="kpi-label">APY net estimé</div><div class="kpi-value" id="kpiApy">—</div><div class="kpi-sub" id="kpiApySub">Chargement</div></article>
+    <article class="card kpi"><div class="kpi-label">Prix de la part</div><div class="kpi-value" id="kpiShare">—</div><div class="kpi-sub">convertToAssets(1 part)</div></article>
+    <article class="card kpi"><div class="kpi-label">Solde direct du vault</div><div class="kpi-value" id="kpiIdle">—</div><div class="kpi-sub" id="kpiIdleSub">Chargement</div></article>
   </section>
-</main>
 
-<section class="panel" id="marketsPanel">
-  <div class="panel-head"><h2>Marchés EURCV</h2><span class="tag g" id="marketsTag">…</span></div>
-  <div id="marketsBody"><div class="sk" style="height:160px"></div></div>
-</section>
+  <div class="main-grid">
+    <section class="card section">
+      <div class="section-head">
+        <div><h2>Allocation</h2><p>Exposition du vault sur les marchés suivis.</p></div>
+        <span class="badge" id="allocationBadge">—</span>
+      </div>
+      <div id="allocationBody" class="loading">Chargement…</div>
+    </section>
 
-<footer>
-  <div>
-    <h3>Méthodologie</h3>
-    <p><b style="color:var(--txt)">100 % statique</b> : les 4 IDs de marchés sont hardcodés, aucun scan d'historique. Chaque refresh = 1 lecture de bloc + 2 multicalls batchés (~30 lectures on-chain), failover sur 6 RPC publics.</p>
-    <p style="margin-top:8px"><b style="color:var(--txt)">Incentives (donations)</b> : les rewards sont versés par transfert direct vers le vault. Sont affichés les <b>soldes actuels</b> du vault en EURCV / MORPHO / wstETH (les tokens non-underlying restent à distribuer tant qu'ils ne sont pas swap/alloués ; l'EURCV idle est déjà dans le prix de part) + les soldes des adresses donatrices ajoutées (= capacité restante côté programme).</p>
-    <p style="margin-top:8px"><b style="color:var(--txt)">Taux</b> : <span style="font-family:var(--mono)">borrowRateView(IRM)</span> + intérêts courus recalculés depuis <span style="font-family:var(--mono)">lastUpdate</span>. APR supply = APR borrow × utilisation × (1 − fee marché). APY vault = pondération par allocation, net des frais vault. Ceci n'est pas un conseil financier.</p>
+    <section class="card section">
+      <div class="section-head">
+        <div><h2>Incentives</h2><p>Soldes du vault et des adresses donatrices.</p></div>
+        <span class="badge" id="rewardsBadge">—</span>
+      </div>
+      <div id="rewardsBody" class="loading">Chargement…</div>
+      <form class="donor-form" id="donorForm">
+        <input class="input" id="donorInput" placeholder="0x… adresse treasury ou programme" autocomplete="off" spellcheck="false">
+        <button class="button" type="submit">Ajouter</button>
+      </form>
+      <div class="donor-chips" id="donorChips"></div>
+    </section>
   </div>
-  <div>
-    <h3>Contrats (Ethereum)</h3>
-    <ul>
-      <li class="mono">Morpho Blue<br>0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb</li>
-      <li class="mono" style="margin-top:8px">Vault Steakhouse EURCV<br>0xbeef0C075Da5D01112AE5cF34d257074fB5DDB2f</li>
-      <li class="mono" style="margin-top:8px">MORPHO · wstETH<br>0x58D9…7155 · 0x7f39…2Ca0</li>
-      <li class="mono" style="margin-top:8px">Multicall3<br>0xcA11bde05977b3631167028862bE2a173976CA11</li>
-    </ul>
-  </div>
-</footer>
 
+  <section class="card table-card">
+    <div class="section-head table-head">
+      <div><h2>Marchés EURCV suivis</h2><p>Supply, borrow, utilisation et exposition du vault.</p></div>
+      <span class="badge" id="marketsBadge">4 marchés</span>
+    </div>
+    <div class="table-wrap" id="marketsBody"><div class="loading">Chargement…</div></div>
+  </section>
+
+  <details class="diagnostics" id="diagnostics">
+    <summary>Diagnostic technique</summary>
+    <div class="diag-actions"><button class="button" id="testRpcsButton" type="button">Tester les RPC</button></div>
+    <div class="diag-log" id="diagLog"><div class="diag-line">Journal prêt.</div></div>
+  </details>
+
+  <div class="footer">
+    <span>4 IDs de marchés configurés · lecture seule · actualisation toutes les 60 s</span>
+    <span id="lastUpdated">Jamais actualisé</span>
+  </div>
 </div>
-<div id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 "use strict";
-/* ============================================================
-   CONFIG 100% HARDCODÉE — aucune découverte, aucun historique
-   ============================================================ */
-const CFG={
-  vault:"0xbeef0C075Da5D01112AE5cF34d257074fB5DDB2f",
-  morphoBlue:"0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-  multicall3:"0xcA11bde05977b3631167028862bE2a173976CA11",
-  marketIds:[
+
+const CFG = {
+  vault: "0xbeef0C075Da5D01112AE5cF34d257074fB5DDB2f",
+  morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+  multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  marketIds: [
     "0x7a25fb17b8bd83a934ad87d9d1725188fc129992ca816f3145b4ab7f673c98c3",
     "0x82053fe2fc3a3d6cb856458948e9c3589e76f20f3a2079606739b517587267ce",
     "0xb7a75cabc2e8eadd0bc661340a9e359d9828bed6d5cbbcd64188bca8c01e399e",
     "0xaa7231d6bee28b578efe38b52e801d5d3067023853342fc06ded437d2a80ef98"
   ],
-  rewardTokens:[
-    {addr:"0x58D97B57BB95320F9a08dC4716358989345b7155", expect:/morpho/i},  // MORPHO
-    {addr:"0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", expect:/wsteth/i}   // wstETH
+  rewardTokens: [
+    { address: "0x58D97B57BB95320F9a08dC4716358989345b7155", expectedSymbol: /morpho/i },
+    { address: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", expectedSymbol: /wsteth/i }
   ],
-  donorAddresses:[ /* ← adresses des programmes / treasury donateurs */ ],
-  refreshMs:60_000,
-  rpcs:[
+  donorAddresses: [],
+  refreshMs: 60_000,
+  requestTimeoutMs: 12_000,
+  rpcs: [
     "https://ethereum-rpc.publicnode.com",
     "https://eth.llamarpc.com",
     "https://eth.drpc.org",
@@ -248,472 +264,692 @@ const CFG={
     "https://rpc.mevblocker.io"
   ]
 };
-const LS_DONORS="steakEURCV-donors-v2";
-const WAD=10n**18n, ZERO="0x0000000000000000000000000000000000000000", SPY=31536000;
-const PALETTE=["#ff6a3d","#5b8cff","#ffb13d","#41dfa0","#c084fc","#ff5d6c","#67e8f9","#f9a8d4","#a3e635","#fbbf24"];
 
-/* ================= ETAT ================= */
-const S={
-  latest:0, nowSec:0, rpcIdx:0, rpcHost:"",
-  vault:CFG.vault, eurcv:null, vaultMeta:{}, idle:0n,
-  mkts:[], tokens:{}, rTokens:[], donors:[], rwStats:null, commitment:null,
-  busy:false, booted:false
+const STORAGE_KEY = "steakEURCV-donors-v3";
+const WAD = 10n ** 18n;
+const SECONDS_PER_YEAR = 31_536_000;
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const MAX_UINT184 = (1n << 184n) - 1n;
+const DEMO_MODE = new URLSearchParams(location.search).has("demo");
+const COLORS = ["#1d6b4f", "#56735f", "#94aa9b", "#b6c4ba", "#d8ded9", "#a8793f"];
+
+const $ = id => document.getElementById(id);
+const state = {
+  rpcIndex: 0,
+  rpcHost: "",
+  blockNumber: 0,
+  nowSec: 0,
+  busy: false,
+  vaultMeta: {},
+  underlying: null,
+  directLiquidity: 0n,
+  markets: [],
+  tokens: {},
+  rewardTokens: [],
+  donors: [],
+  derived: {}
 };
+let interfaces = {};
+let toastTimer;
 
-/* ================= UI helpers ================= */
-const logEl=document.getElementById("logStrip");
-function log(msg,lvl){const d=document.createElement("div");if(lvl)d.className=lvl;d.textContent="▸ "+msg;logEl.appendChild(d);while(logEl.children.length>60)logEl.removeChild(logEl.firstChild);logEl.scrollTop=logEl.scrollHeight;}
-let toastT;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2400);}
-function fatal(msg){document.getElementById("fatalBox").innerHTML=`<div class="banner-err">⚠ ${msg} <button class="btn" style="margin-left:12px" onclick="location.reload()">Réessayer</button></div>`;}
-const fU=(w,d)=>Number(ethers.formatUnits(w,d));
-function fmtTok(v,sym){if(v==null||!isFinite(v))return "—";if(Math.abs(v)>=1e6)return (v/1e6).toLocaleString("fr-FR",{maximumFractionDigits:2})+" M "+sym;if(Math.abs(v)>=1000)return v.toLocaleString("fr-FR",{maximumFractionDigits:0})+" "+sym;return v.toLocaleString("fr-FR",{maximumFractionDigits:2})+" "+sym;}
-const fmtEUR=v=>fmtTok(v,"€");
-const fmtPct=(v,d=2)=>(v==null||!isFinite(v))?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d})+" %";
-const short=a=>a?a.slice(0,6)+"…"+a.slice(-4):"";
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
-function getDonors(){let d=CFG.donorAddresses.slice();try{const s=JSON.parse(localStorage.getItem(LS_DONORS));if(Array.isArray(s))d=d.concat(s.filter(a=>!d.includes(a)));}catch(e){}return d;}
-function getDonorsStoredOnly(){try{return JSON.parse(localStorage.getItem(LS_DONORS))||[];}catch(e){return[];}}
-function saveDonorsExtra(list){try{localStorage.setItem(LS_DONORS,JSON.stringify(list));}catch(e){}}
-
-/* ================= RPC failover ================= */
-async function rpcCall(method,params,timeout=25000){
-  let lastErr;
-  for(let i=0;i<CFG.rpcs.length;i++){
-    const url=CFG.rpcs[(S.rpcIdx+i)%CFG.rpcs.length];
-    try{
-      const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),timeout);
-      const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params}),signal:ctl.signal});
-      clearTimeout(t);
-      const j=await res.json();
-      if(j.error)throw new Error(j.error.message||"rpc error");
-      S.rpcIdx=(S.rpcIdx+i)%CFG.rpcs.length;S.rpcHost=new URL(url).host;
-      document.getElementById("rpcHost").textContent="RPC : "+S.rpcHost;
-      document.getElementById("rpcDot").classList.remove("err");
-      return j.result;
-    }catch(e){lastErr=e;}
-  }
-  document.getElementById("rpcDot").classList.add("err");
-  throw new Error("RPC échoués ("+(lastErr&&lastErr.message||"?")+")");
+function log(message, level = "info") {
+  const line = document.createElement("div");
+  line.className = `diag-line ${level}`;
+  line.textContent = `${level === "ok" ? "✓" : level === "warn" ? "△" : level === "err" ? "✕" : "·"} ${message}`;
+  $("diagLog").appendChild(line);
+  $("diagLog").scrollTop = $("diagLog").scrollHeight;
+  console[level === "err" ? "error" : level === "warn" ? "warn" : "log"]("[dashboard]", message);
+}
+function clearLog() { $("diagLog").innerHTML = ""; }
+function showToast(message) {
+  $("toast").textContent = message;
+  $("toast").classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
+}
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+}
+function shortAddress(address) { return address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "—"; }
+function formatUnits(value, decimals = 18) {
+  if (value == null) return NaN;
+  try {
+    const negative = value < 0n;
+    const absolute = negative ? -value : value;
+    const base = 10n ** BigInt(decimals);
+    const integer = absolute / base;
+    const fraction = (absolute % base).toString().padStart(decimals, "0").replace(/0+$/, "");
+    return Number(`${negative ? "-" : ""}${integer}${fraction ? `.${fraction}` : ""}`);
+  } catch (_) { return NaN; }
+}
+function formatToken(value, symbol = "") {
+  if (!Number.isFinite(value)) return "—";
+  const absolute = Math.abs(value);
+  const options = absolute >= 1_000_000
+    ? { maximumFractionDigits: 2 }
+    : absolute >= 1_000
+      ? { maximumFractionDigits: 0 }
+      : { maximumFractionDigits: 2 };
+  const scaled = absolute >= 1_000_000 ? value / 1_000_000 : value;
+  return `${scaled.toLocaleString("fr-FR", options)}${absolute >= 1_000_000 ? " M" : ""}${symbol ? ` ${symbol}` : ""}`;
+}
+function formatPercent(value, digits = 2) {
+  return Number.isFinite(value) ? `${value.toLocaleString("fr-FR", { minimumFractionDigits: digits, maximumFractionDigits: digits })} %` : "—";
+}
+function compactDonors(list) {
+  const map = new Map();
+  for (const address of list) if (typeof address === "string") map.set(address.toLowerCase(), address);
+  return [...map.values()];
+}
+function getStoredDonors() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) { return []; }
+}
+function saveStoredDonors(list) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(compactDonors(list))); } catch (_) {}
+}
+function setConnection(mode, text) {
+  $("rpcStatus").className = `status ${mode || ""}`;
+  $("rpcHost").textContent = text;
+}
+function copyText(text) {
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => showToast("Copié"));
+  else showToast(text);
 }
 
-/* ================= ABIs ================= */
-let IF={};
-function initIfaces(){
-  IF.vault=new ethers.Interface([
-    "function asset() view returns (address)","function name() view returns (string)","function symbol() view returns (string)",
-    "function decimals() view returns (uint8)","function totalSupply() view returns (uint256)","function totalAssets() view returns (uint256)",
-    "function convertToAssets(uint256) view returns (uint256)","function fee() view returns (uint256)",
-    "function curator() view returns (address)","function config(bytes32) view returns (uint184 cap, bool forced)"
+async function rpcCall(method, params, timeoutMs = CFG.requestTimeoutMs) {
+  let lastError;
+  for (let offset = 0; offset < CFG.rpcs.length; offset++) {
+    const index = (state.rpcIndex + offset) % CFG.rpcs.length;
+    const url = CFG.rpcs[index];
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: Date.now(), method, params }),
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const json = await response.json();
+      if (json.error) throw new Error(json.error.message || "Erreur RPC");
+      if (!("result" in json)) throw new Error("Réponse RPC sans result");
+      state.rpcIndex = index;
+      state.rpcHost = new URL(url).host;
+      setConnection("ok", state.rpcHost);
+      return json.result;
+    } catch (error) {
+      lastError = error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  setConnection("error", "RPC indisponible");
+  throw new Error(`Tous les RPC ont échoué : ${lastError?.message || "erreur inconnue"}`);
+}
+
+function initInterfaces() {
+  interfaces.vault = new ethers.Interface([
+    "function asset() view returns (address)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)",
+    "function totalSupply() view returns (uint256)",
+    "function totalAssets() view returns (uint256)",
+    "function convertToAssets(uint256) view returns (uint256)",
+    "function fee() view returns (uint256)",
+    "function curator() view returns (address)",
+    "function config(bytes32) view returns (uint184 cap, bool enabled, uint64 removableAt)"
   ]);
-  IF.blue=new ethers.Interface([
+  interfaces.blue = new ethers.Interface([
     "function idToMarketParams(bytes32) view returns (address loanToken,address collateralToken,address oracle,address irm,uint256 lltv)",
     "function market(bytes32) view returns (uint128 totalSupplyAssets,uint128 totalSupplyShares,uint128 totalBorrowAssets,uint128 totalBorrowShares,uint128 lastUpdate,uint128 fee)",
-    "function position(bytes32,address) view returns (uint256 supplyShares,uint256 borrowShares,uint256 collateral,bool isCollateralized)"
+    "function position(bytes32,address) view returns (uint256 supplyShares,uint128 borrowShares,uint128 collateral)"
   ]);
-  IF.irm=new ethers.Interface(["function borrowRateView((address,address,address,address,uint256)) view returns (uint256)"]);
-  IF.erc20=new ethers.Interface(["function symbol() view returns (string)","function decimals() view returns (uint8)","function balanceOf(address) view returns (uint256)"]);
-  IF.mc=new ethers.Interface(["function aggregate3((address,bool,bytes)[] calls) payable returns ((bool,bytes)[] returnData)"]);
+  interfaces.irm = new ethers.Interface([
+    "function borrowRateView((address loanToken,address collateralToken,address oracle,address irm,uint256 lltv) marketParams,(uint128 totalSupplyAssets,uint128 totalSupplyShares,uint128 totalBorrowAssets,uint128 totalBorrowShares,uint128 lastUpdate,uint128 fee) market) view returns (uint256)"
+  ]);
+  interfaces.erc20 = new ethers.Interface([
+    "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)",
+    "function balanceOf(address) view returns (uint256)"
+  ]);
+  interfaces.multicall = new ethers.Interface([
+    "function aggregate3(tuple(address target,bool allowFailure,bytes callData)[] calls) payable returns (tuple(bool success,bytes returnData)[] returnData)"
+  ]);
 }
 
-/* ================= Multicall batché ================= */
-function reader(){const tasks=[];return{
-  add(to,iface,fn,args,cb){try{tasks.push({to,iface,fn,data:iface.encodeFunctionData(fn,args),cb});}catch(e){cb(null,e);}},
-  async flush(){
-    let fails=0;
-    for(let i=0;i<tasks.length;i+=60){
-      const chunk=tasks.slice(i,i+60);let ret=null;
-      try{
-        const data=IF.mc.encodeFunctionData("aggregate3",[chunk.map(t=>[t.to,true,t.data])]);
-        const raw=await rpcCall("eth_call",[{to:CFG.multicall3,data},"latest"]);
-        ret=IF.mc.decodeFunctionResult("aggregate3",raw)[0];
-      }catch(e){fails+=chunk.length;chunk.forEach(t=>t.cb(null,e));continue;}
-      chunk.forEach((t,j)=>{
-        const r=ret[j];
-        if(!r[0]||!r[1]||r[1]==="0x"){fails++;t.cb(null,new Error("revert"));return;}
-        try{t.cb(t.iface.decodeFunctionResult(t.fn,r[1]),null);}catch(e){fails++;t.cb(null,e);}
-      });
+function createReader() {
+  const tasks = [];
+  return {
+    add(target, iface, functionName, args, onSuccess, label = functionName) {
+      try {
+        tasks.push({ target, iface, functionName, data: iface.encodeFunctionData(functionName, args), onSuccess, label });
+      } catch (error) {
+        log(`${label} non encodable : ${error.message}`, "warn");
+      }
+    },
+    async flush() {
+      for (let start = 0; start < tasks.length; start += 60) {
+        const chunk = tasks.slice(start, start + 60);
+        let results = null;
+        try {
+          const data = interfaces.multicall.encodeFunctionData("aggregate3", [chunk.map(task => [task.target, true, task.data])]);
+          const raw = await rpcCall("eth_call", [{ to: CFG.multicall3, data }, "latest"]);
+          results = interfaces.multicall.decodeFunctionResult("aggregate3", raw)[0];
+        } catch (error) {
+          log(`Multicall indisponible, fallback individuel : ${error.message}`, "warn");
+        }
+
+        for (let index = 0; index < chunk.length; index++) {
+          const task = chunk[index];
+          try {
+            let returnData;
+            if (results) {
+              const result = results[index];
+              if (!result?.[0] || !result?.[1] || result[1] === "0x") throw new Error("revert");
+              returnData = result[1];
+            } else {
+              returnData = await rpcCall("eth_call", [{ to: task.target, data: task.data }, "latest"]);
+              if (!returnData || returnData === "0x") throw new Error("réponse vide");
+            }
+            const decoded = task.iface.decodeFunctionResult(task.functionName, returnData);
+            task.onSuccess(decoded);
+          } catch (error) {
+            log(`${task.label} ignoré : ${error.message}`, "warn");
+          }
+        }
+      }
     }
-    return fails;
+  };
+}
+
+function wTaylorCompounded(ratePerSecond, elapsedSeconds) {
+  const first = ratePerSecond * BigInt(elapsedSeconds);
+  const second = first * first / (2n * WAD);
+  const third = second * first / (3n * WAD);
+  return first + second + third;
+}
+function accrueMarket(market) {
+  const totals = market.totals;
+  let supplyAssets = totals.supplyAssets;
+  let supplyShares = totals.supplyShares;
+  let borrowAssets = totals.borrowAssets;
+  if (borrowAssets > 0n && market.ratePerSecond > 0n && state.nowSec > totals.lastUpdate) {
+    const elapsed = state.nowSec - totals.lastUpdate;
+    const growth = wTaylorCompounded(market.ratePerSecond, elapsed);
+    const interest = borrowAssets * growth / WAD;
+    supplyAssets += interest;
+    borrowAssets += interest;
+    if (totals.fee > 0n && interest > 0n) {
+      const feeAmount = interest * totals.fee / WAD;
+      if (feeAmount < supplyAssets) {
+        const feeShares = feeAmount * (supplyShares + 1n) / (supplyAssets - feeAmount + 1n);
+        supplyShares += feeShares;
+      }
+    }
   }
-};}
+  return { supplyAssets, supplyShares, borrowAssets };
+}
 
-/* ================= Chargement (2 multicalls) ================= */
-async function refreshAll(){
-  if(S.busy)return;S.busy=true;
-  const btn=document.getElementById("refreshBtn");btn.classList.add("loading");
-  try{
-    S.latest=parseInt(await rpcCall("eth_blockNumber",[]),16);
-    S.nowSec=Math.floor(Date.now()/1000);
-    document.getElementById("blockChip").textContent="bloc "+S.latest.toLocaleString("fr-FR");
+function resetDerivedState() {
+  state.directLiquidity = 0n;
+  state.tokens = {};
+  state.rewardTokens = [];
+  state.markets = [];
+  state.derived = {};
+}
 
-    const v=S.vault,o={};
-    const raw=CFG.marketIds.map(id=>({id}));
+async function refreshAll(verbose = false) {
+  if (state.busy) return;
+  state.busy = true;
+  $("refreshButton").disabled = true;
+  $("refreshButton").textContent = "Actualisation…";
+  try {
+    resetDerivedState();
+    state.blockNumber = Number.parseInt(await rpcCall("eth_blockNumber", []), 16);
+    state.nowSec = Math.floor(Date.now() / 1000);
+    $("blockPill").textContent = `Bloc ${state.blockNumber.toLocaleString("fr-FR")}`;
 
-    /* ---- Multicall 1 : vault + marchés (aucune dépendance) ---- */
-    let R=reader();
-    R.add(v,IF.vault,"name",[],r=>o.name=r[0]);
-    R.add(v,IF.vault,"symbol",[],r=>o.symbol=r[0]);
-    R.add(v,IF.vault,"decimals",[],r=>o.decimals=Number(r[0]));
-    R.add(v,IF.vault,"asset",[],r=>o.asset=ethers.getAddress(r[0]));
-    R.add(v,IF.vault,"fee",[],r=>o.fee=r[0]);
-    R.add(v,IF.vault,"curator",[],r=>o.curator=r[0]);
-    R.add(v,IF.vault,"totalAssets",[],r=>o.totalAssets=r[0]);
-    R.add(v,IF.vault,"totalSupply",[],r=>o.totalSupply=r[0]);
-    for(const m of raw){
-      R.add(CFG.morphoBlue,IF.blue,"idToMarketParams",[m.id],r=>m.params={loanToken:r[0],collateralToken:r[1],oracle:r[2],irm:r[3],lltv:r[4]});
-      R.add(CFG.morphoBlue,IF.blue,"market",[m.id],r=>m.totals={supA:r[0],supS:r[1],borA:r[2],borS:r[3],lastU:Number(r[4]),fee:r[5]});
-      R.add(CFG.morphoBlue,IF.blue,"position",[m.id,v],r=>m.vaultShares=r[0]);
-      R.add(v,IF.vault,"config",[m.id],r=>m.cap=r[0]);
-    }
-    let fails=await R.flush();
-    if(o.asset==null)throw new Error("Le vault ne répond pas — RPC ou adresse invalide");
-    S.vaultMeta=o;
+    const vault = {};
+    const rawMarkets = CFG.marketIds.map(id => ({ id, ratePerSecond: 0n }));
+    let reader = createReader();
 
-    /* ---- Multicall 2 : dépendances (part, idle, taux, méta tokens, soldes rewards) ---- */
-    const eurMeta={};
-    S.tokens={};
-    const colls=new Set(),loans=new Set();
-    for(const m of raw){
-      if(!m.params)continue;
-      if(m.params.collateralToken&&m.params.collateralToken!==ZERO)colls.add(m.params.collateralToken);
-      if(m.params.loanToken&&m.params.loanToken!==ZERO)loans.add(m.params.loanToken);
+    reader.add(CFG.vault, interfaces.vault, "name", [], r => vault.name = r[0], "vault.name");
+    reader.add(CFG.vault, interfaces.vault, "symbol", [], r => vault.symbol = r[0], "vault.symbol");
+    reader.add(CFG.vault, interfaces.vault, "decimals", [], r => vault.decimals = Number(r[0]), "vault.decimals");
+    reader.add(CFG.vault, interfaces.vault, "asset", [], r => vault.asset = ethers.getAddress(r[0]), "vault.asset");
+    reader.add(CFG.vault, interfaces.vault, "fee", [], r => vault.fee = r[0], "vault.fee");
+    reader.add(CFG.vault, interfaces.vault, "curator", [], r => vault.curator = r[0], "vault.curator");
+    reader.add(CFG.vault, interfaces.vault, "totalAssets", [], r => vault.totalAssets = r[0], "vault.totalAssets");
+    reader.add(CFG.vault, interfaces.vault, "totalSupply", [], r => vault.totalSupply = r[0], "vault.totalSupply");
+
+    for (const market of rawMarkets) {
+      reader.add(CFG.morphoBlue, interfaces.blue, "idToMarketParams", [market.id], r => {
+        market.params = { loanToken: r[0], collateralToken: r[1], oracle: r[2], irm: r[3], lltv: r[4] };
+      }, `${market.id.slice(0, 10)} params`);
+      reader.add(CFG.morphoBlue, interfaces.blue, "market", [market.id], r => {
+        market.totals = {
+          supplyAssets: r[0], supplyShares: r[1], borrowAssets: r[2], borrowShares: r[3],
+          lastUpdate: Number(r[4]), fee: r[5]
+        };
+      }, `${market.id.slice(0, 10)} market`);
+      reader.add(CFG.morphoBlue, interfaces.blue, "position", [market.id, CFG.vault], r => market.vaultSupplyShares = r[0], `${market.id.slice(0, 10)} position`);
+      reader.add(CFG.vault, interfaces.vault, "config", [market.id], r => {
+        market.cap = r[0]; market.enabled = r[1]; market.removableAt = Number(r[2]);
+      }, `${market.id.slice(0, 10)} config`);
     }
-    R=reader();
-    R.add(v,IF.vault,"convertToAssets",[10n**BigInt(o.decimals)],r=>o.sharePrice=r[0]);
-    R.add(o.asset,IF.erc20,"balanceOf",[v],r=>S.idle=r[0]);
-    R.add(o.asset,IF.erc20,"symbol",[],r=>eurMeta.sym=r[0]);
-    R.add(o.asset,IF.erc20,"decimals",[],r=>eurMeta.dec=Number(r[0]));
-    for(const c of colls){
-      S.tokens[c.toLowerCase()]={};const t=S.tokens[c.toLowerCase()];
-      R.add(c,IF.erc20,"symbol",[],r=>t.symbol=r[0]);
-      R.add(c,IF.erc20,"decimals",[],r=>t.decimals=Number(r[0]));
+    await reader.flush();
+
+    if (!vault.asset || vault.totalAssets == null) throw new Error("Le vault ne renvoie pas asset() ou totalAssets().");
+    if (!Number.isInteger(vault.decimals)) vault.decimals = 18;
+    state.vaultMeta = vault;
+
+    const tokenAddresses = new Set([vault.asset]);
+    for (const market of rawMarkets) {
+      if (!market.params) continue;
+      if (market.params.loanToken !== ZERO_ADDRESS) tokenAddresses.add(market.params.loanToken);
+      if (market.params.collateralToken !== ZERO_ADDRESS) tokenAddresses.add(market.params.collateralToken);
     }
-    for(const l of loans){
-      if(l.toLowerCase()===o.asset.toLowerCase())continue;
-      S.tokens[l.toLowerCase()]={};const t=S.tokens[l.toLowerCase()];
-      R.add(l,IF.erc20,"symbol",[],r=>t.symbol=r[0]);
-      R.add(l,IF.erc20,"decimals",[],r=>t.decimals=Number(r[0]));
+    for (const reward of CFG.rewardTokens) tokenAddresses.add(reward.address);
+
+    reader = createReader();
+    reader.add(CFG.vault, interfaces.vault, "convertToAssets", [10n ** BigInt(vault.decimals)], r => vault.sharePrice = r[0], "vault.convertToAssets");
+    reader.add(vault.asset, interfaces.erc20, "balanceOf", [CFG.vault], r => state.directLiquidity = r[0], "underlying.balanceOf(vault)");
+
+    for (const address of tokenAddresses) {
+      const token = state.tokens[address.toLowerCase()] = { address, symbol: shortAddress(address), decimals: 18 };
+      reader.add(address, interfaces.erc20, "symbol", [], r => token.symbol = r[0], `${shortAddress(address)} symbol`);
+      reader.add(address, interfaces.erc20, "decimals", [], r => token.decimals = Number(r[0]), `${shortAddress(address)} decimals`);
     }
-    for(const m of raw){
-      if(m.params&&m.params.irm&&m.params.irm!==ZERO){
-        const p=m.params;
-        R.add(p.irm,IF.irm,"borrowRateView",[[p.loanToken,p.collateralToken,p.oracle,p.irm,p.lltv]],r=>m.rate=r[0]);
+
+    for (const market of rawMarkets) {
+      if (!market.params || !market.totals || market.params.irm === ZERO_ADDRESS) continue;
+      const paramsTuple = [market.params.loanToken, market.params.collateralToken, market.params.oracle, market.params.irm, market.params.lltv];
+      const marketTuple = [
+        market.totals.supplyAssets, market.totals.supplyShares, market.totals.borrowAssets,
+        market.totals.borrowShares, market.totals.lastUpdate, market.totals.fee
+      ];
+      reader.add(market.params.irm, interfaces.irm, "borrowRateView", [paramsTuple, marketTuple], r => market.ratePerSecond = r[0], `${market.id.slice(0, 10)} borrowRateView`);
+    }
+
+    state.donors = compactDonors([...CFG.donorAddresses, ...getStoredDonors()]);
+    const rewards = [
+      { address: vault.asset, isUnderlying: true, expectedSymbol: null },
+      ...CFG.rewardTokens.filter(item => item.address.toLowerCase() !== vault.asset.toLowerCase()).map(item => ({ ...item, isUnderlying: false }))
+    ];
+    for (const reward of rewards) {
+      reward.vaultBalance = 0n;
+      reward.donorBalances = state.donors.map(address => ({ address, value: 0n }));
+      if (!reward.isUnderlying) reader.add(reward.address, interfaces.erc20, "balanceOf", [CFG.vault], r => reward.vaultBalance = r[0], `${shortAddress(reward.address)} vault balance`);
+      for (const donor of reward.donorBalances) {
+        reader.add(reward.address, interfaces.erc20, "balanceOf", [donor.address], r => donor.value = r[0], `${shortAddress(reward.address)} donor balance`);
       }
     }
-    // rewards : méta + soldes vault + soldes donateurs
-    S.rTokens=[{addr:o.asset,sym:null,dec:o.decimals,isUnderlying:true}];
-    for(const x of CFG.rewardTokens){
-      if(x.addr.toLowerCase()===o.asset.toLowerCase())continue;
-      S.rTokens.push({addr:x.addr,expect:x.expect,sym:null,dec:18,isUnderlying:false});
+    await reader.flush();
+
+    const underlyingToken = state.tokens[vault.asset.toLowerCase()] || { address: vault.asset, symbol: "EURCV", decimals: 18 };
+    state.underlying = underlyingToken;
+    for (const reward of rewards) {
+      const meta = state.tokens[reward.address.toLowerCase()] || { symbol: shortAddress(reward.address), decimals: 18 };
+      reward.symbol = meta.symbol;
+      reward.decimals = meta.decimals;
+      if (reward.isUnderlying) reward.vaultBalance = state.directLiquidity;
+      reward.donorBalance = reward.donorBalances.reduce((sum, item) => sum + item.value, 0n);
+      reward.remaining = reward.isUnderlying ? reward.donorBalance : reward.vaultBalance + reward.donorBalance;
     }
-    S.donors=getDonors();
-    for(const t of S.rTokens){
-      t.vaultBal=0n;t.donorBal=0n;t.donorBals=[];
-      if(!t.isUnderlying){
-        R.add(t.addr,IF.erc20,"symbol",[],r=>t.sym=r[0]);
-        R.add(t.addr,IF.erc20,"decimals",[],r=>t.dec=Number(r[0]));
-        R.add(t.addr,IF.erc20,"balanceOf",[v],r=>t.vaultBal=r[0]);
-      }
-      for(const d of S.donors){
-        const slot={addr:d,val:0n};t.donorBals.push(slot);
-        R.add(t.addr,IF.erc20,"balanceOf",[d],r=>slot.val=r[0]);
-      }
-    }
-    fails+=await R.flush();
+    state.rewardTokens = rewards.filter(reward => reward.isUnderlying || (reward.expectedSymbol && reward.expectedSymbol.test(String(reward.symbol))));
 
-    // consolidation
-    S.eurcv={address:o.asset,symbol:eurMeta.sym||"EURCV",decimals:eurMeta.dec??18};
-    S.rTokens[0].sym=S.eurcv.symbol;S.rTokens[0].dec=S.eurcv.decimals;S.rTokens[0].vaultBal=S.idle;
-    S.rTokens=S.rTokens.filter(t=>t.isUnderlying||(t.sym&&t.expect&&t.expect.test(t.sym)));
-    for(const t of S.rTokens){t.donorBal=t.donorBals.reduce((s,x)=>s+x.val,0n);}
-
-    if(fails>0)log(`${fails} lecture(s) en échec (affichées en partial)`,"warn");
-    else log("Toutes les lectures on-chain sont OK","ok");
-
-    computeDerived(raw);
-    computeRewardStats();
+    computeDerived(rawMarkets);
     renderAll();
-  }catch(e){
-    console.error(e);
-    log("Erreur : "+(e.message||e),"err");
-    if(!S.booted)fatal("Impossible de charger les données on-chain : "+(e.message||e));
-  }finally{
-    S.busy=false;S.booted=true;btn.classList.remove("loading");
+    $("lastUpdated").textContent = `Actualisé à ${new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
+    if (verbose) log("Lecture et rendu terminés.", "ok");
+  } catch (error) {
+    log(`Actualisation impossible : ${error.message}`, "err");
+    setConnection("error", "Erreur de lecture");
+    renderError(error.message);
+  } finally {
+    state.busy = false;
+    $("refreshButton").disabled = false;
+    $("refreshButton").textContent = "Actualiser";
   }
 }
 
-/* ================= calculs ================= */
-function computeDerived(raw){
-  const eurL=S.eurcv.address.toLowerCase(),list=[];
-  let nBad=0;
-  for(const m of raw){
-    if(!m.params||!m.totals){nBad++;continue;}
-    if(m.params.loanToken===ZERO){nBad++;continue;}
-    const loanL=m.params.loanToken.toLowerCase();
-    const tk=m.params.loanToken.toLowerCase()===eurL?S.eurcv:(S.tokens[loanL]||{symbol:short(m.params.loanToken),decimals:18});
-    const t=m.totals;let iB=0n;
-    if(t.borA>0n&&m.rate&&m.rate>0n&&S.nowSec>t.lastU){
-      const el=BigInt(S.nowSec-t.lastU);
-      iB=(t.borA*m.rate*el+WAD-1n)/WAD;
+function computeDerived(rawMarkets) {
+  const underlyingAddress = state.underlying.address.toLowerCase();
+  const markets = [];
+  for (const raw of rawMarkets) {
+    if (!raw.params || !raw.totals || raw.params.loanToken === ZERO_ADDRESS) continue;
+    const accrued = accrueMarket(raw);
+    const loan = state.tokens[raw.params.loanToken.toLowerCase()] || { symbol: shortAddress(raw.params.loanToken), decimals: 18 };
+    const collateral = raw.params.collateralToken === ZERO_ADDRESS
+      ? { symbol: "Idle", decimals: 18 }
+      : state.tokens[raw.params.collateralToken.toLowerCase()] || { symbol: shortAddress(raw.params.collateralToken), decimals: 18 };
+    const isUnderlying = raw.params.loanToken.toLowerCase() === underlyingAddress;
+    const utilization = accrued.supplyAssets > 0n ? Number(accrued.borrowAssets * 1_000_000n / accrued.supplyAssets) / 1_000_000 : 0;
+    const borrowApr = raw.ratePerSecond > 0n ? Number(raw.ratePerSecond) * SECONDS_PER_YEAR / 1e18 : 0;
+    const marketFee = Number(raw.totals.fee) / 1e18;
+    const supplyApr = borrowApr * utilization * (1 - marketFee);
+    const vaultAssets = raw.vaultSupplyShares != null && accrued.supplyShares > 0n
+      ? raw.vaultSupplyShares * (accrued.supplyAssets + 1n) / (accrued.supplyShares + 1n)
+      : 0n;
+    markets.push({
+      ...raw,
+      ...accrued,
+      loanSymbol: loan.symbol,
+      loanDecimals: Number.isInteger(loan.decimals) ? loan.decimals : 18,
+      collateralSymbol: collateral.symbol,
+      isUnderlying,
+      utilization,
+      borrowApr,
+      supplyApr,
+      vaultAssets
+    });
+  }
+  markets.sort((a, b) => formatUnits(b.supplyAssets, b.loanDecimals) - formatUnits(a.supplyAssets, a.loanDecimals));
+  state.markets = markets;
+
+  const totalAssets = formatUnits(state.vaultMeta.totalAssets, state.underlying.decimals);
+  const underlyingMarkets = markets.filter(market => market.isUnderlying);
+  let weightedSupplyApr = 0;
+  let weightedUtilization = 0;
+  let knownAllocated = 0;
+  let totalMarketBorrow = 0;
+  for (const market of underlyingMarkets) {
+    const vaultAssets = formatUnits(market.vaultAssets, state.underlying.decimals);
+    weightedSupplyApr += vaultAssets * market.supplyApr;
+    weightedUtilization += vaultAssets * market.utilization;
+    knownAllocated += vaultAssets;
+    totalMarketBorrow += formatUnits(market.borrowAssets, state.underlying.decimals);
+  }
+  const grossApr = totalAssets > 0 ? weightedSupplyApr / totalAssets : 0;
+  const vaultFee = state.vaultMeta.fee != null ? Number(state.vaultMeta.fee) / 1e18 : 0;
+  const directLiquidity = formatUnits(state.directLiquidity, state.underlying.decimals);
+  state.derived = {
+    totalAssets,
+    grossApr,
+    vaultFee,
+    netApy: Math.expm1(grossApr * (1 - vaultFee)),
+    weightedUtilization: totalAssets > 0 ? weightedUtilization / totalAssets : 0,
+    directLiquidity,
+    directLiquidityPct: totalAssets > 0 ? directLiquidity / totalAssets : 0,
+    knownAllocated,
+    otherAssets: Math.max(0, totalAssets - knownAllocated),
+    totalMarketBorrow
+  };
+}
+
+function renderAll() {
+  const vault = state.vaultMeta;
+  const underlying = state.underlying;
+  const derived = state.derived;
+  const safeName = escapeHtml((vault.name || "Steakhouse EURCV").toUpperCase());
+  $("vaultName").innerHTML = safeName.replace(/EURCV/gi, "<span style=\"color:var(--accent)\">EURCV</span>");
+  $("vaultAddress").textContent = `Vault ${shortAddress(CFG.vault)}`;
+  $("assetMeta").textContent = `${escapeHtml(underlying.symbol)} · ${underlying.decimals} déc.`;
+  $("feeMeta").textContent = `Frais ${formatPercent((derived.vaultFee || 0) * 100, 0)}`;
+
+  $("kpiTvl").textContent = formatToken(derived.totalAssets, "€");
+  $("kpiTvlSub").textContent = `${formatToken(formatUnits(vault.totalSupply, vault.decimals), "parts")}`;
+  $("kpiApy").textContent = formatPercent(derived.netApy * 100);
+  $("kpiApySub").textContent = `APR brut ${formatPercent(derived.grossApr * 100)} · frais ${formatPercent(derived.vaultFee * 100, 0)}`;
+  $("kpiShare").textContent = vault.sharePrice != null ? formatToken(formatUnits(vault.sharePrice, underlying.decimals), underlying.symbol) : "—";
+  $("kpiIdle").textContent = formatToken(derived.directLiquidity, underlying.symbol);
+  $("kpiIdleSub").textContent = "Hors allocations Morpho suivies";
+
+  renderAllocation();
+  renderRewards();
+  renderDonors();
+  renderMarkets();
+}
+
+function renderAllocation() {
+  const total = state.derived.totalAssets;
+  const items = state.markets
+    .filter(market => market.isUnderlying && market.vaultAssets > 0n)
+    .map(market => ({ name: market.collateralSymbol, value: formatUnits(market.vaultAssets, state.underlying.decimals) }));
+  if (state.derived.otherAssets > Math.max(total * 0.000001, 0.01)) items.push({ name: "Autres / écart", value: state.derived.otherAssets, neutral: true });
+  items.sort((a, b) => b.value - a.value);
+  $("allocationBadge").textContent = `${items.filter(item => !item.neutral).length} marchés alloués`;
+  if (!(total > 0)) {
+    $("allocationBody").innerHTML = '<div class="empty">Vault vide.</div>';
+    return;
+  }
+  $("allocationBody").className = "";
+  $("allocationBody").innerHTML = `
+    <div class="allocation-bar">${items.map((item, index) => `<span style="width:${Math.max(0, item.value / total * 100).toFixed(4)}%;background:${item.neutral ? "#d8ded9" : COLORS[index % COLORS.length]}"></span>`).join("")}</div>
+    <div class="list">${items.map((item, index) => `
+      <div class="list-row">
+        <div class="list-name"><span class="swatch" style="background:${item.neutral ? "#d8ded9" : COLORS[index % COLORS.length]}"></span><span>${escapeHtml(item.name)}</span></div>
+        <div class="list-value">${formatToken(item.value, "€")}</div>
+        <div class="list-pct">${formatPercent(item.value / total * 100, 1)}</div>
+      </div>`).join("")}</div><div class="note">Solde direct du vault, affiché séparément : ${formatToken(state.derived.directLiquidity, state.underlying.symbol)}.</div>`;
+}
+
+function renderRewards() {
+  $("rewardsBadge").textContent = `${state.rewardTokens.length} tokens suivis`;
+  if (!state.rewardTokens.length) {
+    $("rewardsBody").innerHTML = '<div class="empty">Aucun token de reward valide détecté.</div>';
+    return;
+  }
+  const primary = state.rewardTokens.find(token => !token.isUnderlying && token.remaining > 0n)
+    || state.rewardTokens.find(token => token.remaining > 0n)
+    || state.rewardTokens[0];
+  $("rewardsBody").className = "";
+  $("rewardsBody").innerHTML = `
+    <div class="reward-total"><small>Reste suivi · ${escapeHtml(primary.symbol)}</small><strong>${escapeHtml(formatToken(formatUnits(primary.remaining, primary.decimals), primary.symbol))}</strong></div>
+    <div>${state.rewardTokens.map(token => `
+      <div class="reward-row">
+        <strong>${escapeHtml(token.symbol)}${token.isUnderlying ? ' <small style="color:var(--muted);font-weight:500">sous-jacent</small>' : ""}</strong>
+        <span>vault ${escapeHtml(formatToken(formatUnits(token.vaultBalance, token.decimals), token.symbol))}</span>
+        <span>donateurs ${escapeHtml(formatToken(formatUnits(token.donorBalance, token.decimals), token.symbol))}</span>
+      </div>`).join("")}</div>`;
+}
+
+function renderDonors() {
+  $("donorChips").innerHTML = state.donors.map(address => `
+    <span class="donor-chip"><span class="copy" data-copy="${escapeHtml(address)}">${shortAddress(address)}</span><button type="button" data-remove="${escapeHtml(address)}" aria-label="Supprimer ${escapeHtml(address)}">×</button></span>`).join("");
+  $("donorChips").querySelectorAll("[data-copy]").forEach(element => element.addEventListener("click", () => copyText(element.dataset.copy)));
+  $("donorChips").querySelectorAll("[data-remove]").forEach(button => button.addEventListener("click", async () => {
+    saveStoredDonors(getStoredDonors().filter(address => address.toLowerCase() !== button.dataset.remove.toLowerCase()));
+    if (DEMO_MODE) loadDemoData(); else await refreshAll(false);
+  }));
+}
+
+function renderMarkets() {
+  $("marketsBadge").textContent = `${state.markets.length} marchés · ${state.markets.filter(market => market.vaultAssets > 0n).length} alloués`;
+  if (!state.markets.length) {
+    $("marketsBody").innerHTML = '<div class="empty">Aucun marché exploitable. Consulte le diagnostic.</div>';
+    return;
+  }
+  $("marketsBody").innerHTML = `
+    <table>
+      <thead><tr><th>Marché</th><th class="num">LLTV</th><th class="num">Cap vault</th><th class="num">Total deposit</th><th class="num">Borrow</th><th>Utilisation</th><th class="num">APR borrow</th><th class="num">APR supply</th><th class="num">Part du marché</th><th></th></tr></thead>
+      <tbody>${state.markets.map(market => {
+        const supply = formatUnits(market.supplyAssets, market.loanDecimals);
+        const borrow = formatUnits(market.borrowAssets, market.loanDecimals);
+        const vaultAssets = formatUnits(market.vaultAssets, market.loanDecimals);
+        const share = supply > 0 && market.isUnderlying ? vaultAssets / supply : 0;
+        const cap = market.cap == null ? "—" : market.cap === MAX_UINT184 ? "∞" : escapeHtml(formatToken(formatUnits(market.cap, market.loanDecimals), market.loanSymbol));
+        return `<tr>
+          <td><div class="market-name">${escapeHtml(market.collateralSymbol)}${market.vaultAssets > 0n ? '<span class="badge">alloué</span>' : ""}</div><div class="market-id">${shortAddress(market.id)}</div></td>
+          <td class="num">${formatPercent(Number(market.params.lltv) / 1e16, 0)}</td>
+          <td class="num">${cap}</td>
+          <td class="num">${escapeHtml(formatToken(supply, market.loanSymbol))}</td>
+          <td class="num">${escapeHtml(formatToken(borrow, market.loanSymbol))}</td>
+          <td><span class="progress"><i style="width:${Math.min(100, market.utilization * 100).toFixed(2)}%"></i></span>${formatPercent(market.utilization * 100, 1)}</td>
+          <td class="num">${market.ratePerSecond > 0n ? formatPercent(market.borrowApr * 100) : "—"}</td>
+          <td class="num">${market.ratePerSecond > 0n ? formatPercent(market.supplyApr * 100) : "—"}</td>
+          <td class="num">${market.vaultAssets > 0n ? formatPercent(share * 100, 1) : "—"}</td>
+          <td><a class="link" href="https://app.morpho.org/ethereum/market/${market.id}" target="_blank" rel="noopener noreferrer">Ouvrir</a></td>
+        </tr>`;
+      }).join("")}</tbody>
+    </table>
+    <div class="note">Les intérêts sont estimés avec l’approximation de Taylor utilisée par Morpho. L’APY du vault reste une estimation instantanée.</div>`;
+}
+
+function renderError(message) {
+  $("kpiTvlSub").textContent = message;
+  $("allocationBody").innerHTML = '<div class="empty">Données indisponibles.</div>';
+  $("rewardsBody").innerHTML = '<div class="empty">Données indisponibles.</div>';
+  $("marketsBody").innerHTML = '<div class="empty">Données indisponibles.</div>';
+}
+
+async function testRpcs() {
+  clearLog();
+  $("testRpcsButton").disabled = true;
+  for (const url of CFG.rpcs) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8_000);
+    const started = performance.now();
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_blockNumber", params: [] }),
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const json = await response.json();
+      if (json.error) throw new Error(json.error.message || "Erreur RPC");
+      log(`${new URL(url).host} · bloc ${Number.parseInt(json.result, 16).toLocaleString("fr-FR")} · ${Math.round(performance.now() - started)} ms`, "ok");
+    } catch (error) {
+      log(`${new URL(url).host} · ${error.message}`, "err");
+    } finally { clearTimeout(timeout); }
+  }
+  $("testRpcsButton").disabled = false;
+}
+
+function loadScript(url, timeoutMs = 8_000) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    let settled = false;
+    const timeout = setTimeout(() => finish(new Error(`timeout ${new URL(url).host}`)), timeoutMs);
+    function finish(error) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      script.onload = script.onerror = null;
+      if (error) { script.remove(); reject(error); } else resolve();
     }
-    const supA=t.supA+iB,borA=t.borA+iB;
-    const u=supA>0n?Number(borA*10000n/supA)/10000:0;
-    const borrowAPR=m.rate?Number(m.rate)*SPY/1e18:0;
-    const feeM=t.fee?Number(t.fee)/1e18:0;
-    const supplyAPR=borrowAPR*u*(1-feeM);
-    let vaultAssets=0n;
-    if(m.vaultShares&&t.supS>0n)vaultAssets=m.vaultShares*(supA+1n)/(t.supS+1n);
-    const coll=m.params.collateralToken.toLowerCase();
-    const isEurcv=loanL===eurL;
-    list.push({id:m.id,params:m.params,supA,borA,u,borrowAPR,supplyAPR,feeM,vaultAssets,cap:m.cap,isEurcv,
-      loanSym:tk.symbol,loanDec:tk.decimals,
-      collSym:S.tokens[coll]?(S.tokens[coll].symbol||short(m.params.collateralToken)):(m.params.collateralToken===ZERO?"—":short(m.params.collateralToken))});
-  }
-  if(nBad)log(`${nBad} ID(s) de marché n'ont pas répondu (supprimés de l'affichage)`,"warn");
-  list.sort((a,b)=>fU(b.supA,b.loanDec)-fU(a.supA,a.loanDec));
-  S.mkts=list;
-
-  const dec=S.eurcv.decimals,o=S.vaultMeta;
-  const eurMkts=list.filter(m=>m.isEurcv);
-  if(o.totalAssets>0n){
-    let gross=0n,borrowTot=0n;
-    for(const m of eurMkts){gross+=m.vaultAssets;borrowTot+=m.borA;}
-    S.borrowTot=borrowTot;
-    let apr=0;
-    for(const m of eurMkts)apr+=fU(m.vaultAssets,dec)*m.supplyAPR;
-    apr/=fU(o.totalAssets,dec);
-    const feeV=o.fee?Number(o.fee)/1e18:0;
-    S.aprGross=apr;S.feeV=feeV;
-    S.apyNet=Math.exp(apr*(1-feeV))-1;
-    S.utilVault=Number(gross*10000n/o.totalAssets)/10000*(eurMkts.length?eurMkts.reduce((s,m)=>s+m.u*fU(m.vaultAssets,dec),0)/Math.max(1e-9,fU(gross,dec)):0);
-    S.utilVault=Math.min(1,S.utilVault);
-    S.idlePct=fU(S.idle,dec)/fU(o.totalAssets,dec);
-  }
-}
-function computeRewardStats(){
-  for(const t of S.rTokens)t.reste=t.isUnderlying?t.donorBal:(t.vaultBal+t.donorBal);
-  const under=S.rTokens.find(t=>t.isUnderlying);
-  const active=S.rTokens.filter(t=>t.reste>0n);
-  let head=under||S.rTokens[0];
-  if(active.length)head=active.slice().sort((a,b)=>fU(b.reste,b.dec)-fU(a.reste,a.dec))[0];
-  if(!head){S.rwStats=null;return;}
-  const commitActive=S.commitment&&S.commitment.addr.toLowerCase()===head.addr.toLowerCase();
-  const resteNum=commitActive?Math.max(0,S.commitment.amount-fU(head.vaultBal+head.donorBal,head.dec)):fU(head.reste,head.dec);
-  S.rwStats={head,resteNum,commitActive};
-}
-
-/* ================= rendu ================= */
-const KPI_DEFS=[
-  {id:"tvl",label:"TVL vault",fmt:v=>fmtEUR(v)},
-  {id:"apy",label:"APY net estimé",fmt:v=>fmtPct(v*100)},
-  {id:"share",label:"Prix de la part",fmt:v=>v.toLocaleString("fr-FR",{maximumFractionDigits:6})+" "+(S.eurcv?S.eurcv.symbol:"EURCV")},
-  {id:"util",label:"Utilisation pondérée",fmt:v=>fmtPct(v*100)},
-  {id:"borrow",label:"Total emprunté (marchés EURCV)",fmt:v=>fmtEUR(v)},
-  {id:"rw",label:"Rewards restants (donation)",fmt:v=>S.rwStats?fmtTok(v,S.rwStats.head.sym):"—"},
-];
-function buildKpis(){
-  document.getElementById("kpis").innerHTML=KPI_DEFS.map(k=>`
-    <div class="kpi"><div class="kpi-label">${k.label}</div>
-    <div class="kpi-value sk" id="kv-${k.id}">···</div>
-    <div class="kpi-sub" id="ks-${k.id}"></div></div>`).join("");
-}
-function setVal(id,num,fmt){
-  const el=document.getElementById("kv-"+id);if(!el)return;
-  el.classList.remove("sk");
-  if(num==null||!isFinite(num)){el.textContent="—";return;}
-  const prev=parseFloat(el.dataset.v);el.dataset.v=num;
-  if(!isFinite(prev)||Math.abs(prev-num)<1e-12){el.textContent=fmt(num);return;}
-  const t0=performance.now(),dur=750;
-  (function step(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);
-    el.textContent=fmt(prev+(num-prev)*e);if(k<1)requestAnimationFrame(step);})(t0);
-}
-function sub(id,txt){const el=document.getElementById("ks-"+id);if(el)el.textContent=txt;}
-
-function renderAll(){
-  const o=S.vaultMeta,dec=S.eurcv.decimals;
-  document.getElementById("vaultName").innerHTML=esc((o.name||"Vault EURCV").toUpperCase().replace(/(EURCV)/,'<span class="hl">$1</span>'));
-  const ach=document.getElementById("vaultAddrChip");
-  ach.textContent="vault : "+short(S.vault);ach.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(S.vault);toast("Adresse vault copiée ✓");};
-  document.getElementById("assetChip").textContent="actif : "+S.eurcv.symbol+" · "+o.decimals+" dec";
-  document.getElementById("curatorChip").textContent="curator : "+(o.curator?short(o.curator):"—");
-  document.getElementById("feeChip").textContent="fee vault : "+(o.fee!=null?fmtPct(Number(o.fee)/1e16,0):"—");
-  renderDonorChips();
-
-  setVal("tvl",fU(o.totalAssets,dec),KPI_DEFS[0].fmt);
-  setVal("apy",S.apyNet??NaN,KPI_DEFS[1].fmt);
-  setVal("share",o.sharePrice?fU(o.sharePrice,dec):NaN,KPI_DEFS[2].fmt);
-  setVal("util",S.utilVault??NaN,KPI_DEFS[3].fmt);
-  setVal("borrow",S.borrowTot?fU(S.borrowTot,dec):0,KPI_DEFS[4].fmt);
-  setVal("rw",S.rwStats?S.rwStats.resteNum:NaN,KPI_DEFS[5].fmt);
-  sub("tvl",`${fU(o.totalSupply,o.decimals??dec).toLocaleString("fr-FR",{maximumFractionDigits:0})} parts`);
-  sub("apy",`brut ${fmtPct((S.aprGross??0)*100)} · frais ${fmtPct((S.feeV??0)*100,0)}`);
-  sub("share","convertToAssets(1 part)");
-  sub("util",`idle ${fmtPct((S.idlePct??0)*100)}`);
-  sub("borrow",S.mkts.filter(m=>m.isEurcv).length+" marchés EURCV");
-  sub("rw",S.rwStats?(S.rwStats.commitActive?"engagement − (vault + donateurs)":"vault + donateurs"):"—");
-
-  renderRewards();renderAlloc();renderMarkets();
-}
-
-function renderDonorChips(){
-  const box=document.getElementById("donorChips");box.innerHTML="";
-  S.donors.forEach(a=>{
-    const c=document.createElement("span");
-    c.className="chip";
-    c.innerHTML=`<span class="addr" style="border:none" data-copy="${a}">${short(a)}</span><span class="rm" data-d="${a}" title="retirer">✕</span>`;
-    box.appendChild(c);
+    script.src = url;
+    script.async = true;
+    script.onload = () => finish();
+    script.onerror = () => finish(new Error(`chargement impossible ${new URL(url).host}`));
+    document.head.appendChild(script);
   });
-  box.querySelectorAll(".rm").forEach(x=>x.onclick=()=>{
-    const a=x.dataset.d;
-    saveDonorsExtra(getDonorsStoredOnly().filter(z=>z!==a));
-    if(CFG.donorAddresses.includes(a))toast("Retire aussi cette adresse de CFG.donorAddresses");
-    refreshAll();
-  });
-  box.querySelectorAll(".addr").forEach(x=>x.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(x.dataset.copy);toast("Adresse copiée ✓");});
 }
-
-function renderRewards(){
-  const st=S.rwStats;
-  if(!st){document.getElementById("rewardsBody").innerHTML='<p class="note">Chargement…</p>';return;}
-  const {head,commitActive}=st;
-  const subTxt=commitActive
-    ?`Engagement déclaré ${fmtTok(S.commitment.amount,head.sym)} − soldes actuels (vault + donateurs).`
-    :head.isUnderlying
-      ?"Soldes actuels des adresses donatrices. L'EURCV déjà donné est dans le prix de la part (idle inclus dans totalAssets)."
-      :`Solde actuel du vault en ${head.sym} (en attente de swap/allocation, hors prix de part) + soldes des adresses donatrices.`;
-  document.getElementById("rewardsBody").innerHTML=`
-    <div class="rw-hero">
-      <div class="rw-label">Reste à distribuer · ${head.sym}</div>
-      <div class="rw-big">${fmtTok(st.resteNum,head.sym)}</div>
-      <div class="rw-sub">${subTxt}</div>
-    </div>
-    <div class="rw-stats">
-      <div><label>Solde vault · ${head.sym}</label><b>${fmtTok(fU(head.isUnderlying?S.idle:head.vaultBal,head.dec),head.sym)}</b></div>
-      <div><label>Solde donateurs · ${head.sym}</label><b>${fmtTok(fU(head.donorBal,head.dec),head.sym)}</b></div>
-      <div><label>Adresses donatrices suivies</label><b>${S.donors.length}</b></div>
-    </div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Token</th><th class="num">Solde vault</th><th class="num">Solde donateurs</th><th class="num">Reste à distribuer</th></tr></thead>
-      <tbody>${S.rTokens.map(t=>`<tr${t===head?' class="in-vault"':''}>
-        <td><b>${esc(t.sym)}</b>${t.isUnderlying?' <span class="tag g" style="margin-left:6px">sous-jacent</span>':''}</td>
-        <td class="num">${t.isUnderlying?`<span class="dim" title="inclus dans totalAssets">${fmtTok(fU(S.idle,t.dec),t.sym)} · dans les parts</span>`:fmtTok(fU(t.vaultBal,t.dec),t.sym)}</td>
-        <td class="num">${fmtTok(fU(t.donorBal,t.dec),t.sym)}</td>
-        <td class="num pos"><b>${fmtTok(fU(t.reste,t.dec),t.sym)}</b></td>
-      </tr>`).join("")}
-      </tbody></table></div>
-    ${S.donors.length?`
-    <div class="tbl-wrap" style="margin-top:10px"><table>
-      <thead><tr><th>Donateur</th>${S.rTokens.map(t=>`<th class="num">${esc(t.sym)}</th>`).join("")}</tr></thead>
-      <tbody>${S.donors.map((d,i)=>`<tr>
-        <td><span class="addr" data-copy="${d}" title="copier">${short(d)}</span></td>
-        ${S.rTokens.map(t=>`<td class="num ${t.donorBals[i]&&t.donorBals[i].val>0n?'pos':''}">${fmtTok(fU(t.donorBals[i]?t.donorBals[i].val:0n,t.dec),t.sym)}</td>`).join("")}
-      </tr>`).join("")}
-      </tbody></table></div>`
-    :`<p class="note">Ajoute l'adresse du programme / treasury donateur (champ en haut de page) pour afficher sa capacité restante.</p>`}
-    <div class="rw-commit">
-      <span>Engagement total déclaré pour ${esc(head.sym)} (optionnel) :</span>
-      <input id="commitInput" placeholder="ex. 250 000" value="${commitActive?S.commitment.amount:""}">
-      <button class="btn" id="commitApply">Appliquer</button>
-      ${S.commitment?'<button class="btn" id="commitClear">✕</button>':""}
-    </div>
-    <p class="note">Valeurs instantanées on-chain (balanceOf), sans historique : le vault reçoit les incentives par transfert direct. Les donations en sous-jacent sont immédiatement dans le prix de part ; les autres tokens restent à distribuer tant qu'ils ne sont pas alloués/swap.</p>`;
-  document.getElementById("commitApply").onclick=()=>{
-    const n=parseFloat(document.getElementById("commitInput").value.replace(/\s/g,"").replace(",","."));
-    if(isFinite(n)&&n>0){S.commitment={addr:head.addr,amount:n};computeRewardStats();renderAll();toast("Engagement appliqué ✓");}
-    else toast("Montant invalide");
-  };
-  const cc=document.getElementById("commitClear");
-  if(cc)cc.onclick=()=>{S.commitment=null;computeRewardStats();renderAll();};
-  document.querySelectorAll("#rewardsBody .addr").forEach(x=>x.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(x.dataset.copy);toast("Adresse copiée ✓");});
-}
-
-function renderAlloc(){
-  const dec=S.eurcv.decimals,o=S.vaultMeta;
-  const total=fU(o.totalAssets,dec);
-  const items=S.mkts.filter(m=>m.isEurcv&&m.vaultAssets>0n).map(m=>({name:m.collSym,val:fU(m.vaultAssets,dec)}));
-  const idle=fU(S.idle,dec);
-  if(idle>0)items.push({name:"Idle (non alloué)",val:idle,idle:true});
-  items.sort((a,b)=>b.val-a.val);
-  document.getElementById("allocTag").textContent=items.length+" positions";
-  if(!total){document.getElementById("allocBody").innerHTML='<p class="note">Vault vide.</p>';return;}
-  const bar=items.map((it,i)=>`<i style="background:${it.idle?'rgba(255,255,255,.14)':PALETTE[i%PALETTE.length]}" data-w="${(it.val/total*100).toFixed(2)}"></i>`).join("");
-  document.getElementById("allocBody").innerHTML=`
-    <div class="alloc-bar">${bar}</div>
-    ${items.map((it,i)=>`<div class="alloc-row">
-      <span class="sw" style="background:${it.idle?'rgba(255,255,255,.2)':PALETTE[i%PALETTE.length]}"></span>
-      <span class="alloc-name">${esc(it.name)}</span>
-      <span class="alloc-val">${fmtEUR(it.val)}</span>
-      <span class="alloc-pct">${fmtPct(it.val/total*100,1)}</span>
-    </div>`).join("")}`;
-  animateBars(document.getElementById("allocPanel"));
-}
-
-function renderMarkets(){
-  document.getElementById("marketsTag").textContent=S.mkts.length+" marchés · "+S.mkts.filter(m=>m.isEurcv&&m.vaultAssets>0n).length+" alloués";
-  if(!S.mkts.length){
-    document.getElementById("marketsBody").innerHTML='<p class="note">Aucun marché n\'a répondu — vérifie le RPC.</p>';return;
+async function loadEthers() {
+  if (window.ethers) return;
+  const cdns = [
+    "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js",
+    "https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js",
+    "https://unpkg.com/ethers@6.13.2/dist/ethers.umd.min.js"
+  ];
+  for (const url of cdns) {
+    try {
+      await loadScript(url);
+      if (window.ethers) { log(`ethers.js chargé depuis ${new URL(url).host}`, "ok"); return; }
+    } catch (error) { log(error.message, "warn"); }
   }
-  document.getElementById("marketsBody").innerHTML=`
-  <div class="tbl-wrap"><table>
-    <thead><tr>
-      <th>Marché / Collatéral</th><th class="num">LLTV</th><th class="num">Cap</th>
-      <th class="num">Supply</th><th class="num">Borrow</th><th>Utilisation</th>
-      <th class="num">APR borrow</th><th class="num">APR supply</th><th class="num">Part vault</th><th></th>
-    </tr></thead>
-    <tbody>${S.mkts.map(m=>{
-      const inV=m.vaultAssets>0n;
-      const mSup=fU(m.supA,m.loanDec),mBor=fU(m.borA,m.loanDec);
-      const capStr=m.cap==null?"—":(m.cap>=2n**128n?"∞":fmtTok(fU(m.cap,m.loanDec),m.loanSym));
-      const share=(mSup>0&&m.isEurcv)?fU(m.vaultAssets,m.loanDec)/mSup:0;
-      return `<tr class="${inV?'in-vault':''}" title="market id : ${m.id}">
-        <td><b>${esc(m.collSym)}</b> <span class="dim">${short(m.params.collateralToken)}</span>${inV?' <span class="tag" style="margin-left:6px">alloué</span>':''}</td>
-        <td class="num">${fmtPct(Number(m.params.lltv)/1e16,0)}</td>
-        <td class="num dim">${capStr}</td>
-        <td class="num">${fmtTok(mSup,m.loanSym)}</td>
-        <td class="num">${fmtTok(mBor,m.loanSym)}</td>
-        <td><span class="util"><i class="${m.u>0.9?'hi':''}" data-w="${Math.round(m.u*100)}"></i></span><span style="font-family:var(--mono);font-size:12px">${fmtPct(m.u*100,1)}</span></td>
-        <td class="num">${m.borrowAPR?fmtPct(m.borrowAPR*100):"—"}</td>
-        <td class="num ${m.supplyAPR>0?'pos':''}">${m.supplyAPR?fmtPct(m.supplyAPR*100):"—"}</td>
-        <td class="num dim">${inV?fmtPct(share*100,1):"—"}</td>
-        <td><a class="ext" target="_blank" rel="noopener" href="https://app.morpho.org/market?id=${m.id}&network=ethereum" title="Ouvrir sur app.morpho.org">↗</a></td>
-      </tr>`;}).join("")}
-    </tbody></table></div>
-  <p class="note">Taux : borrowRateView(IRM) + intérêts courus recalculés depuis lastUpdate. APR supply = APR borrow × utilisation × (1 − fee marché).</p>`;
-  animateBars(document.getElementById("marketsPanel"));
+  throw new Error("ethers.js n’a pas pu être chargé. Vérifie le réseau ou héberge la bibliothèque localement.");
 }
 
-function animateBars(root){requestAnimationFrame(()=>requestAnimationFrame(()=>{root.querySelectorAll("[data-w]").forEach(el=>el.style.width=el.dataset.w+"%");}));}
-
-/* ================= boot ================= */
-function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error(src));document.head.appendChild(s);});}
-async function loadEthers(){
-  const cdns=["https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js",
-              "https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js",
-              "https://unpkg.com/ethers@6.13.2/dist/ethers.umd.min.js"];
-  for(const u of cdns){try{await loadScript(u);if(window.ethers)return;}catch(e){}}
-  throw new Error("CDN ethers.js inaccessibles");
+function demoBig(value, decimals = 18) {
+  return BigInt(Math.round(value * 1e6)) * (10n ** BigInt(decimals)) / 1_000_000n;
 }
-
-(async function boot(){
-  buildKpis();
-  try{await loadEthers();}catch(e){fatal(e.message);return;}
-  initIfaces();
-  document.getElementById("refreshBtn").onclick=()=>refreshAll();
-  document.getElementById("donorAdd").onclick=()=>{
-    const a=document.getElementById("donorInput").value.trim();
-    try{
-      const c=ethers.getAddress(a);
-      const extra=getDonorsStoredOnly();
-      if(!extra.includes(c)&&!CFG.donorAddresses.includes(c))extra.push(c);
-      saveDonorsExtra(extra);document.getElementById("donorInput").value="";
-      toast("Donateur ajouté ✓");refreshAll();
-    }catch(e){toast("Adresse invalide");}
+function loadDemoData() {
+  document.body.classList.add("demo");
+  setConnection("ok", "mode démo");
+  state.blockNumber = 23_145_678;
+  state.nowSec = Math.floor(Date.now() / 1000);
+  state.vaultMeta = {
+    name: "Steakhouse EURCV", symbol: "steakEURCV", decimals: 18,
+    asset: "0x5F7827FDeb7c20b443265Fc2F40845B715385Ff2", fee: demoBig(.1),
+    totalAssets: demoBig(22_460_000), totalSupply: demoBig(21_982_000), sharePrice: demoBig(1.021745)
   };
-  document.getElementById("donorInput").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("donorAdd").click();});
-  try{
-    await refreshAll();
-    setInterval(()=>{if(document.getElementById("liveToggle").checked&&!document.hidden&&!S.busy)refreshAll();},CFG.refreshMs);
-  }catch(e){fatal(e.message);}
+  state.underlying = { address: state.vaultMeta.asset, symbol: "EURCV", decimals: 18 };
+  state.directLiquidity = demoBig(690_000);
+  state.donors = compactDonors([...CFG.donorAddresses, ...getStoredDonors()]);
+  const marketData = [
+    [CFG.marketIds[1], "cbBTC", 12_170_000, 8_480_000, 7_100_000, .86, .036],
+    [CFG.marketIds[2], "WBTC", 4_490_000, 3_030_000, 4_120_000, .86, .041],
+    [CFG.marketIds[0], "wstETH", 2_490_000, 1_280_000, 2_010_000, .945, .029],
+    [CFG.marketIds[3], "EUTBL", 3_750_000, 2_120_000, 3_540_000, .915, .033]
+  ];
+  state.markets = marketData.map(([id, collateralSymbol, supply, borrow, vaultAssets, lltv, apr], index) => ({
+    id, collateralSymbol, loanSymbol: "EURCV", loanDecimals: 18, isUnderlying: true,
+    params: { lltv: demoBig(lltv), collateralToken: `0x${String(index + 1).padStart(40, "0")}` },
+    totals: { fee: demoBig(.1) }, cap: index === 0 ? MAX_UINT184 : demoBig(supply * 1.4), enabled: true,
+    supplyAssets: demoBig(supply), supplyShares: demoBig(supply), borrowAssets: demoBig(borrow),
+    vaultAssets: demoBig(vaultAssets), utilization: borrow / supply, ratePerSecond: BigInt(Math.round(apr * 1e18 / SECONDS_PER_YEAR)),
+    borrowApr: apr, supplyApr: apr * (borrow / supply) * .9
+  }));
+  state.rewardTokens = [
+    { address: state.vaultMeta.asset, symbol: "EURCV", decimals: 18, isUnderlying: true, vaultBalance: state.directLiquidity, donorBalance: demoBig(45_000), remaining: demoBig(45_000), donorBalances: [] },
+    { address: CFG.rewardTokens[0].address, symbol: "MORPHO", decimals: 18, isUnderlying: false, vaultBalance: demoBig(12_500), donorBalance: demoBig(7_500), remaining: demoBig(20_000), donorBalances: [] }
+  ];
+  const total = formatUnits(state.vaultMeta.totalAssets, 18);
+  const knownAllocated = state.markets.reduce((sum, market) => sum + formatUnits(market.vaultAssets, 18), 0);
+  const weightedSupplyApr = state.markets.reduce((sum, market) => sum + formatUnits(market.vaultAssets, 18) * market.supplyApr, 0);
+  const weightedUtilization = state.markets.reduce((sum, market) => sum + formatUnits(market.vaultAssets, 18) * market.utilization, 0);
+  state.derived = {
+    totalAssets: total, grossApr: weightedSupplyApr / total, vaultFee: .1,
+    netApy: Math.expm1((weightedSupplyApr / total) * .9), weightedUtilization: weightedUtilization / total,
+    directLiquidity: formatUnits(state.directLiquidity, 18), directLiquidityPct: formatUnits(state.directLiquidity, 18) / total,
+    knownAllocated, otherAssets: Math.max(0, total - knownAllocated),
+    totalMarketBorrow: state.markets.reduce((sum, market) => sum + formatUnits(market.borrowAssets, 18), 0)
+  };
+  $("blockPill").textContent = `Bloc ${state.blockNumber.toLocaleString("fr-FR")}`;
+  renderAll();
+  $("lastUpdated").textContent = "Données de démonstration";
+  log("Mode démonstration chargé.", "ok");
+}
+
+async function normalizeAddress(value) {
+  if (window.ethers) return ethers.getAddress(value);
+  if (/^0x[a-fA-F0-9]{40}$/.test(value)) return value;
+  throw new Error("Adresse invalide");
+}
+
+$("vaultAddress").addEventListener("click", () => copyText(CFG.vault));
+$("refreshButton").addEventListener("click", async () => {
+  if (DEMO_MODE) loadDemoData(); else await refreshAll(true);
+});
+$("testRpcsButton").addEventListener("click", () => DEMO_MODE ? log("Test RPC désactivé en mode démo.", "warn") : testRpcs());
+$("donorForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  try {
+    const value = $("donorInput").value.trim();
+    const address = await normalizeAddress(value);
+    saveStoredDonors([...getStoredDonors(), address]);
+    $("donorInput").value = "";
+    if (DEMO_MODE) loadDemoData(); else await refreshAll(false);
+  } catch (_) { showToast("Adresse invalide"); }
+});
+window.addEventListener("error", event => log(`Erreur JavaScript : ${event.message}`, "err"));
+window.addEventListener("unhandledrejection", event => log(`Promesse rejetée : ${event.reason?.message || event.reason}`, "err"));
+
+window.DashboardCore = { formatUnits, wTaylorCompounded, compactDonors, accrueMarket, escapeHtml };
+
+(async function boot() {
+  if (DEMO_MODE) {
+    loadDemoData();
+    return;
+  }
+  try {
+    await loadEthers();
+    initInterfaces();
+    await refreshAll(true);
+    setInterval(() => { if (!document.hidden && !state.busy) refreshAll(false); }, CFG.refreshMs);
+  } catch (error) {
+    log(`Démarrage impossible : ${error.message}`, "err");
+    setConnection("error", "Initialisation échouée");
+    renderError(error.message);
+  }
 })();
 </script>
 </body>
