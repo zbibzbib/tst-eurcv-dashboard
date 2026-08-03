@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steakhouse EURCV · Vault Morpho — Dashboard on-chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080c; --panel:#12121a; --panel2:#0d0d13; --line:#23232f; --line2:#31313f;
+  --txt:#ecebe7; --muted:#9a99a6; --dim:#6b6a78;
+  --ember:#ff6a3d; --ember2:#ffb13d; --blue:#5b8cff; --green:#41dfa0; --red:#ff5d6c;
+  --mono:'IBM Plex Mono',monospace; --disp:'Unbounded',sans-serif; --body:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+   radial-gradient(900px 500px at 12% -10%, rgba(255,106,61,.13), transparent 60%),
+   radial-gradient(800px 480px at 88% -10%, rgba(91,140,255,.10), transparent 60%),
+   linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+   linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+  background-size:auto,auto,44px 44px,44px 44px;
+}
+.bg::after{content:"";position:absolute;inset:-20%;
+  background:radial-gradient(600px 400px at 30% 20%, rgba(255,177,61,.07), transparent 60%);
+  animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(-4%,-3%) scale(1)}to{transform:translate(5%,4%) scale(1.12)}}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px 60px}
+
+/* ---------- header ---------- */
+header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px 0 10px}
+.brand{display:flex;gap:14px;align-items:center}
+.mark{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:20px;color:#1a0d06;
+  background:linear-gradient(135deg,var(--ember2),var(--ember));box-shadow:0 6px 24px rgba(255,106,61,.35)}
+.brand-line{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--muted)}
+.brand-line .x{color:var(--ember)}
+.brand-sub{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.08em;margin-top:3px}
+.top-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.chip.click{cursor:pointer;transition:.15s}.chip.click:hover{border-color:var(--ember);color:var(--txt)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.dot.err{background:var(--red);box-shadow:0 0 8px var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.btn{font-family:var(--mono);font-size:11.5px;color:var(--txt);background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:8px 14px;cursor:pointer;transition:.15s;letter-spacing:.04em}
+.btn:hover{border-color:var(--ember);box-shadow:0 0 18px rgba(255,106,61,.22);transform:translateY(-1px)}
+.btn.icon{font-size:15px;padding:6px 12px;line-height:1}
+.btn.loading{animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.15em}
+.switch input{display:none}
+.slider{width:34px;height:18px;border-radius:99px;background:var(--panel);border:1px solid var(--line2);position:relative;transition:.2s}
+.slider::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--dim);transition:.2s}
+.switch input:checked+.slider{border-color:var(--ember);background:rgba(255,106,61,.15)}
+.switch input:checked+.slider::after{left:18px;background:var(--ember);box-shadow:0 0 8px var(--ember)}
+
+/* ---------- vault head ---------- */
+.vault-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin:26px 0 8px}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(26px,4vw,42px);letter-spacing:.01em;line-height:1.1;text-transform:uppercase}
+h1 .hl{background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chips-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.vh-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.manual{display:flex;gap:8px}
+.manual input{font-family:var(--mono);font-size:11px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 12px;width:250px;outline:none;transition:.15s}
+.manual input:focus{border-color:var(--blue)}
+.cand{border-color:var(--blue)!important;color:var(--txt)}
+.cand.active{border-color:var(--ember)!important;box-shadow:0 0 14px rgba(255,106,61,.25)}
+
+/* ---------- log strip ---------- */
+.logstrip{font-family:var(--mono);font-size:10.5px;color:var(--dim);background:rgba(13,13,19,.7);border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin:16px 0;max-height:64px;overflow-y:auto;backdrop-filter:blur(4px)}
+.logstrip div{padding:1px 0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.logstrip .ok{color:var(--green)} .logstrip .warn{color:var(--ember2)} .logstrip .err{color:var(--red)}
+
+/* ---------- KPIs ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
+.kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;transition:.2s;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,106,61,.6),transparent);opacity:0;transition:.25s}
+.kpi:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.kpi:hover::before{opacity:1}
+.kpi-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.kpi-value{font-family:var(--mono);font-weight:600;font-size:21px;letter-spacing:-.01em}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* ---------- panels ---------- */
+.grid-main{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:940px){.grid-main{grid-template-columns:1fr}}
+.panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:22px;transition:border-color .2s}
+.panel:hover{border-color:var(--line2)}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.panel-head h2{font-family:var(--disp);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ember2);border:1px solid rgba(255,177,61,.35);background:rgba(255,177,61,.07);padding:4px 9px;border-radius:99px}
+.tag.b{color:var(--blue);border-color:rgba(91,140,255,.35);background:rgba(91,140,255,.07)}
+.tag.g{color:var(--green);border-color:rgba(65,223,160,.35);background:rgba(65,223,160,.07)}
+
+/* rewards */
+.rw-hero{padding:18px;border:1px solid var(--line);border-radius:14px;background:radial-gradient(400px 120px at 20% 0%,rgba(255,106,61,.10),transparent),var(--panel2);margin-bottom:14px}
+.rw-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.rw-big{font-family:var(--disp);font-weight:800;font-size:clamp(26px,3.4vw,38px);margin:8px 0 6px;background:linear-gradient(90deg,var(--ember2),var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rw-sub{font-size:11.5px;color:var(--muted)}
+.rw-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:640px){.rw-stats{grid-template-columns:1fr}}
+.rw-stats>div{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.rw-stats label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:6px}
+.rw-stats b{font-family:var(--mono);font-size:15px;font-weight:600}
+.rw-commit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px}
+.rw-commit input{font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:7px 10px;width:130px;outline:none}
+.rw-commit input:focus{border-color:var(--ember2)}
+.note{font-size:10.5px;color:var(--dim);margin-top:12px;line-height:1.6}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid rgba(35,35,47,.6);vertical-align:middle}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+td.num,th.num{text-align:right;font-family:var(--mono)}
+td.num{font-size:12.5px}
+tr.in-vault td:first-child{box-shadow:inset 3px 0 0 var(--ember)}
+.dim{color:var(--dim)} .pos{color:var(--green)} .neg{color:var(--red)}
+.addr{font-family:var(--mono);font-size:11px;color:var(--blue);cursor:pointer;border-bottom:1px dotted rgba(91,140,255,.4)}
+.addr:hover{color:var(--txt)}
+a.ext{color:var(--muted);text-decoration:none;font-size:14px;transition:.15s}
+a.ext:hover{color:var(--ember)}
+.util{width:74px;height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.util i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--ember2));width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.util i.hi{background:linear-gradient(90deg,var(--ember2),var(--red))}
+.util i.g{background:linear-gradient(90deg,var(--blue),var(--green))}
+
+/* allocation */
+.alloc-bar{display:flex;height:16px;border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-bottom:16px;background:var(--panel2)}
+.alloc-bar i{display:block;height:100%;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.alloc-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid rgba(35,35,47,.55);font-size:12.5px}
+.alloc-row:last-child{border-bottom:none}
+.sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.alloc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alloc-val{font-family:var(--mono);font-size:12px}
+.alloc-pct{font-family:var(--mono);font-size:11px;color:var(--muted);width:58px;text-align:right}
+
+/* skeleton */
+.sk{position:relative;overflow:hidden;background:rgba(255,255,255,.05);border-radius:6px;color:transparent!important}
+.sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:sh 1.4s infinite}
+@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+footer{margin-top:26px;border-top:1px solid var(--line);padding-top:20px;display:grid;grid-template-columns:1.4fr 1fr;gap:26px}
+@media(max-width:800px){footer{grid-template-columns:1fr}}
+footer h3{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+footer p,footer li{font-size:11px;color:var(--muted);line-height:1.7}
+footer ul{padding-left:16px}
+footer .mono{font-family:var(--mono);font-size:10px;color:var(--dim);word-break:break-all}
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel);border:1px solid var(--ember);color:var(--txt);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:99;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.banner-err{background:rgba(255,93,108,.08);border:1px solid rgba(255,93,108,.4);color:var(--red);border-radius:14px;padding:14px 18px;font-size:12.5px;margin:14px 0;font-family:var(--mono)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:99px}::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">
+    <div class="mark">S</div>
+    <div>
+      <div class="brand-line">MORPHO BLUE <span class="x">×</span> STEAKHOUSE FINANCIAL</div>
+      <div class="brand-sub">VAULT EURCV · BASE · LECTURE 100% ON-CHAIN</div>
+    </div>
+  </div>
+  <div class="top-tools">
+    <div class="chip" id="rpcChip"><span class="dot" id="rpcDot"></span><span id="rpcHost">RPC : connexion…</span></div>
+    <div class="chip" id="blockChip">bloc —</div>
+    <label class="switch"><input type="checkbox" id="liveToggle" checked><span class="slider"></span><span>LIVE</span></label>
+    <button class="btn icon" id="refreshBtn" title="Rafraîchir maintenant">⟳</button>
+  </div>
+</header>
+
+<section class="vault-head">
+  <div class="vh-left">
+    <h1 id="vaultName">STEAKHOUSE <span class="hl">EURCV</span></h1>
+    <div class="chips-row">
+      <span class="chip click" id="vaultAddrChip" data-copy="">vault : …</span>
+      <span class="chip" id="assetChip">actif : …</span>
+      <span class="chip" id="curatorChip">curator : …</span>
+      <span class="chip" id="feeChip">fee vault : …</span>
+      <span class="chip" id="morphoChip" data-copy="">morpho blue : …</span>
+    </div>
+  </div>
+  <div class="vh-right">
+    <div class="manual">
+      <input id="manualAddr" placeholder="Adresse vault (override)" spellcheck="false">
+      <button class="btn" id="manualGo">Charger</button>
+    </div>
+    <div class="chips-row" id="candidateRow"></div>
+  </div>
+</section>
+
+<div class="logstrip" id="logStrip"><div>▸ initialisation…</div></div>
+<div id="fatalBox"></div>
+
+<section class="kpis" id="kpis"></section>
+
+<main class="grid-main">
+  <section class="panel" id="rewardsPanel">
+    <div class="panel-head"><h2>Incentives · modèle donation</h2><span class="tag">dons on-chain</span></div>
+    <div id="rewardsBody"><div class="sk" style="height:180px"></div></div>
+  </section>
+  <section class="panel" id="allocPanel">
+    <div class="panel-head"><h2>Allocation du vault</h2><span class="tag b" id="allocTag">…</span></div>
+    <div id="allocBody"><div class="sk" style="height:180px"></div></div>
+  </section>
+</main>
+
+<section class="panel" id="marketsPanel">
+  <div class="panel-head"><h2>Tous les marchés EURCV</h2><span class="tag g" id="marketsTag">scan…</span></div>
+  <div id="marketsBody"><div class="sk" style="height:160px"></div></div>
+</section>
+
+<footer>
+  <div>
+    <h3>Méthodologie</h3>
+    <p><b style="color:var(--txt)">Incentives (donations) :</b> les rewards du vault sont versés par transfert direct d'actifs vers l'adresse du vault. Toute donation est immédiatement acquise aux porteurs de parts via le prix de la part (<span style="font-family:var(--mono)">totalAssets</span> inclut le solde idle). Le dashboard détecte ces donations on-chain : événements <span style="font-family:var(--mono)">Transfer(ERC20 → vault)</span> rapprochés des événements <span style="font-family:var(--mono)">Deposit</span> (pour exclure les mints) et des retraits Morpho Blue. « Reste à distribuer » = somme des soldes on-chain des adresses donatrices identifiées ; si un engagement total est saisi, reste = engagement − déjà donné.</p>
+    <p style="margin-top:8px"><b style="color:var(--txt)">Taux :</b> <span style="font-family:var(--mono)">borrowRateView(IRM)</span> + intérêts courus recalculés depuis <span style="font-family:var(--mono)">lastUpdate</span>. APY supply = APR borrow × utilisation × (1 − fee marché). APY vault = pondération par allocation, net des frais vault, idle inclus (0 %).</p>
+    <p style="margin-top:8px" class="dim">Les RPC publics peuvent être lents ou limiter la plage de scan des logs. Aucune donnée off-chain n'est utilisée. Ceci n'est pas un conseil financier.</p>
+  </div>
+  <div>
+    <h3>Contrats (Base)</h3>
+    <ul>
+      <li class="mono">Morpho Blue<br>0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb</li>
+      <li class="mono" style="margin-top:8px">MetaMorpho Factory<br>0xA9c3D3a366466Fa809d1Ae982Fb4c4E4c8dD443A</li>
+      <li class="mono" style="margin-top:8px">Multicall3<br>0xcA11bde05977b3631167028862bE2a173976CA11</li>
+    </ul>
+    <p style="margin-top:12px"><button class="btn" id="rescanBtn">⟲ Rescan complet (événements)</button></p>
+  </div>
+</footer>
+
+</div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ================= CONFIG ================= */
+const CFG={
+  chain:"Base", chainId:8453,
+  morphoBlue:"0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+  factory:"0xA9c3D3a366466Fa809d1Ae982Fb4c4E4c8dD443A",
+  multicall3:"0xcA11bde05977b3631167028862bE2a173976CA11",
+  scanWindow:22_000_000,
+  refreshMs:60_000,
+  rpcs:[
+    "https://base-rpc.publicnode.com",
+    "https://mainnet.base.org",
+    "https://base.llamarpc.com",
+    "https://1rpc.io/base",
+    "https://base.drpc.org"
+  ]
+};
+const WAD=10n**18n, ZERO="0x0000000000000000000000000000000000000000", SPY=31536000;
+const PALETTE=["#ff6a3d","#5b8cff","#ffb13d","#41dfa0","#c084fc","#ff5d6c","#67e8f9","#f9a8d4","#a3e635","#fbbf24"];
+const CACHE_KEY="steakEURCV-cache-v2", CACHE_TTL=3*3600*1000;
+
+/* ================= ETAT ================= */
+const S={
+  latest:0, nowSec:0, rpcIdx:0, rpcHost:"",
+  eurcv:null, vault:null, vaultBlock:null, candidates:[],
+  marketIndex:new Map(), // id -> {id, params}
+  mkts:[], tokens:{}, vaultMeta:{},
+  donations:{given:0n, donors:new Map(), idle:0n, scannedTo:0},
+  commitment:null, busy:false, booted:false
+};
+
+/* ================= LOG / TOAST ================= */
+const logEl=document.getElementById("logStrip");
+function log(msg,lvl){
+  const d=document.createElement("div"); if(lvl)d.className=lvl;
+  d.textContent="▸ "+msg; logEl.appendChild(d);
+  while(logEl.children.length>80)logEl.removeChild(logEl.firstChild);
+  logEl.scrollTop=logEl.scrollHeight;
+}
+let toastT; function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2400);}
+function fatal(msg){document.getElementById("fatalBox").innerHTML=`<div class="banner-err">⚠ ${msg} <button class="btn" style="margin-left:12px" onclick="location.reload()">Réessayer</button></div>`;}
+
+/* ================= FORMAT ================= */
+const fU=(w,d)=>Number(ethers.formatUnits(w,d));
+function fmtEUR(v,compact){
+  if(v==null||!isFinite(v))return "—";
+  if(compact&&Math.abs(v)>=1e6)return (v/1e6).toLocaleString("fr-FR",{maximumFractionDigits:2})+" M€";
+  if(Math.abs(v)>=1000)return v.toLocaleString("fr-FR",{maximumFractionDigits:0})+" €";
+  return v.toLocaleString("fr-FR",{maximumFractionDigits:2})+" €";
+}
+const fmtPct=(v,d=2)=>(v==null||!isFinite(v))?"—":v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d})+" %";
+const short=a=>a?a.slice(0,6)+"…"+a.slice(-4):"";
+const hexBlock=n=>"0x"+Math.floor(n).toString(16);
+const mb=n=>(n/1e6).toFixed(1)+"M";
+
+/* ================= RPC ================= */
+async function rpcCall(method,params,timeout=25000){
+  let lastErr;
+  for(let i=0;i<CFG.rpcs.length;i++){
+    const url=CFG.rpcs[(S.rpcIdx+i)%CFG.rpcs.length];
+    try{
+      const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),timeout);
+      const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params}),signal:ctl.signal});
+      clearTimeout(t);
+      const j=await res.json();
+      if(j.error)throw new Error(j.error.message||"rpc error");
+      S.rpcIdx=(S.rpcIdx+i)%CFG.rpcs.length; S.rpcHost=new URL(url).host;
+      document.getElementById("rpcHost").textContent="RPC : "+S.rpcHost;
+      document.getElementById("rpcDot").classList.remove("err");
+      return j.result;
+    }catch(e){lastErr=e;}
+  }
+  document.getElementById("rpcDot").classList.add("err");
+  throw new Error("RPC indisponibles ("+(lastErr&&lastErr.message||"?")+")");
+}
+
+/* ================= INTERFACES ================= */
+let IF={};
+function initIfaces(){
+  IF.vault=new ethers.Interface([
+    "function asset() view returns (address)","function name() view returns (string)","function symbol() view returns (string)",
+    "function decimals() view returns (uint8)","function totalSupply() view returns (uint256)","function totalAssets() view returns (uint256)",
+    "function convertToAssets(uint256) view returns (uint256)","function fee() view returns (uint256)","function feeRecipient() view returns (address)",
+    "function owner() view returns (address)","function curator() view returns (address)","function timelock() view returns (uint256)",
+    "function morpho() view returns (address)","function supplyQueueLength() view returns (uint256)","function supplyQueue(uint256) view returns (bytes32)",
+    "function config(bytes32) view returns (uint184 cap, bool forced)",
+    "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)"
+  ]);
+  IF.blue=new ethers.Interface([
+    "function idToMarketParams(bytes32) view returns (address loanToken,address collateralToken,address oracle,address irm,uint256 lltv)",
+    "function market(bytes32) view returns (uint128 totalSupplyAssets,uint128 totalSupplyShares,uint128 totalBorrowAssets,uint128 totalBorrowShares,uint128 lastUpdate,uint128 fee)",
+    "function position(bytes32,address) view returns (uint256 supplyShares,uint256 borrowShares,uint256 collateral,bool isCollateralized)",
+    "event CreateMarket(bytes32 indexed id, (address,address,address,address,uint256) marketParams)"
+  ]);
+  IF.irm=new ethers.Interface(["function borrowRateView((address,address,address,address,uint256)) view returns (uint256)"]);
+  IF.erc20=new ethers.Interface(["function symbol() view returns (string)","function name() view returns (string)","function decimals() view returns (uint8)","function balanceOf(address) view returns (uint256)","event Transfer(address indexed from, address indexed to, uint256 value)"]);
+  IF.factory=new ethers.Interface(["event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)"]);
+  IF.mc=new ethers.Interface(["function aggregate3((address,bool,bytes)[] calls) payable returns ((bool,bytes)[] returnData)"]);
+}
+
+/* ================= MULTICALL ================= */
+function reader(){const tasks=[];return{
+  add(to,iface,fn,args,cb){try{tasks.push({to,iface,fn,data:iface.encodeFunctionData(fn,args),cb});}catch(e){cb(null,e);}},
+  async flush(){
+    for(let i=0;i<tasks.length;i+=60){
+      const chunk=tasks.slice(i,i+60); let ret=null;
+      try{
+        const data=IF.mc.encodeFunctionData("aggregate3",[chunk.map(t=>[t.to,true,t.data])]);
+        const raw=await rpcCall("eth_call",[{to:CFG.multicall3,data},"latest"]);
+        ret=IF.mc.decodeFunctionResult("aggregate3",raw)[0];
+      }catch(e){chunk.forEach(t=>t.cb(null,e));continue;}
+      chunk.forEach((t,j)=>{
+        const r=ret[j];
+        if(!r[0]||!r[1]||r[1]==="0x"){t.cb(null,new Error("revert"));return;}
+        try{t.cb(t.iface.decodeFunctionResult(t.fn,r[1]),null);}catch(e){t.cb(null,e);}
+      });
+    }
+  }
+};}
+
+/* ================= LOGS (scan adaptatif) ================= */
+async function scanLogs(address,topics,from,to,label){
+  const out=[]; let chunk=2_500_000; const MIN=30_000; let cur=from;
+  while(cur<=to){
+    const end=Math.min(cur+chunk-1,to);
+    try{
+      const logs=await rpcCall("eth_getLogs",[{address,topics,fromBlock:hexBlock(cur),toBlock:hexBlock(end)}],40000);
+      out.push(...(logs||[]));
+      log(`${label} : ${mb(cur)} → ${mb(end)} ✓ (${(logs||[]).length} logs)`);
+      cur=end+1; if(chunk<2_500_000)chunk=Math.min(chunk*2,2_500_000);
+    }catch(e){
+      if(chunk<=MIN)throw e;
+      log(`${label} : plage réduite (${(e.message||"").slice(0,42)})`,"warn");
+      chunk=Math.max(MIN,Math.floor(chunk/2));
+    }
+  }
+  return out;
+}
+
+/* ================= DECOUVERTE STATIQUE ================= */
+function loadCache(){try{const c=JSON.parse(sessionStorage.getItem(CACHE_KEY));if(c&&Date.now()-c.ts<CACHE_TTL)return c;}catch(e){}return null;}
+function saveCache(){try{
+  const markets=[...S.marketIndex.values()].map(m=>({id:m.id,params:m.params}));
+  sessionStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),eurcv:S.eurcv,vault:S.vault,vaultBlock:S.vaultBlock,markets}));
+}catch(e){}}
+
+async function initStatic(force){
+  if(!force){
+    const c=loadCache();
+    if(c&&c.vault&&c.eurcv){
+      log("Cache session utilisé (rescan via bouton footer)","warn");
+      S.eurcv=c.eurcv;S.vault=c.vault;S.vaultBlock=c.vaultBlock;
+      (c.markets||[]).forEach(m=>S.marketIndex.set(m.id,{id:m.id,params:m.params}));
+      renderCandidates();return;
+    }
+  }
+  sessionStorage.removeItem(CACHE_KEY);
+  S.latest=parseInt(await rpcCall("eth_blockNumber",[]),16);
+  document.getElementById("blockChip").textContent="bloc "+S.latest.toLocaleString("fr-FR");
+  const from=Math.max(1,S.latest-CFG.scanWindow);
+  const cmT0=IF.blue.getEvent("CreateMarket").topicHash;
+  const cmmT0=IF.factory.getEvent("CreateMetaMorpho").topicHash;
+
+  let mktLogs=[],facLogs=[];
+  try{mktLogs=await scanLogs(CFG.morphoBlue,[cmT0],from,S.latest,"CreateMarket");}
+  catch(e){log("Scan CreateMarket échoué : "+e.message,"err");}
+  try{facLogs=await scanLogs(CFG.factory,[cmmT0],from,S.latest,"CreateMetaMorpho");}
+  catch(e){log("Scan CreateMetaMorpho échoué : "+e.message,"err");}
+
+  // --- marchés ---
+  let loanTokens=new Set();
+  for(const lg of mktLogs){
+    try{
+      const p=IF.blue.parseLog({topics:lg.topics,data:lg.data}); if(!p)continue;
+      const mp=p.args[1];
+      S.marketIndex.set(p.args[0],{id:p.args[0],params:{loanToken:mp[0],collateralToken:mp[1],oracle:mp[2],irm:mp[3],lltv:mp[4]}});
+      loanTokens.add(mp[0].toLowerCase());
+    }catch(e){}
+  }
+  log(`${S.marketIndex.size} marchés Morpho Blue décodés`,"ok");
+
+  // --- token EURCV via les loan tokens ---
+  if(!S.eurcv){
+    const R=reader(); const meta={};
+    [...loanTokens].forEach(a=>{
+      R.add(a,IF.erc20,"symbol",[],r=>{(meta[a]=meta[a]||{}).sym=r[0];});
+      R.add(a,IF.erc20,"decimals",[],r=>{(meta[a]=meta[a]||{}).dec=Number(r[0]);});
+    });
+    await R.flush();
+    for(const[a,m]of Object.entries(meta)){
+      if(m.sym&&/eurcv/i.test(m.sym)){S.eurcv={address:ethers.getAddress(a),symbol:m.sym,decimals:m.dec??18};break;}
+    }
+  }
+
+  // --- vaults EURCV via factory ---
+  const cands=[];
+  for(const lg of facLogs){
+    try{
+      const p=IF.factory.parseLog({topics:lg.topics,data:lg.data}); if(!p)continue;
+      const nm=(p.args[5]||"")+" "+(p.args[6]||"");
+      if(/eurcv/i.test(nm)){
+        cands.push({addr:ethers.getAddress(p.args[0]),name:p.args[5],symbol:p.args[6],asset:ethers.getAddress(p.args[4]),block:parseInt(lg.blockNumber,16)});
+      }
+    }catch(e){}
+  }
+  // fallback : filtrer par topic asset si décodage KO
+  if(!cands.length&&S.eurcv){
+    const seen=new Set();
+    for(const lg of facLogs){
+      if(lg.topics.length>=4&&lg.topics[3]&&lg.topics[3].slice(-40).toLowerCase()===S.eurcv.address.toLowerCase().slice(2)){
+        const a=ethers.getAddress("0x"+lg.topics[1].slice(-40));
+        if(!seen.has(a)){seen.add(a);cands.push({addr:a,name:"(à valider)",symbol:"?",asset:S.eurcv.address,block:parseInt(lg.blockNumber,16)});}
+      }
+    }
+  }
+  cands.sort((a,b)=>{const s=x=>/steak/i.test((x.name||"")+(x.symbol||""))?0:1;return s(a)-s(b);});
+  S.candidates=cands;
+  log(`${cands.length} vault(s) EURCV détecté(s) via la factory`,"ok");
+  if(cands.length){S.vault=cands[0].addr;S.vaultBlock=cands[0].block;}
+  renderCandidates();
+  saveCache();
+}
+
+function renderCandidates(){
+  const row=document.getElementById("candidateRow"); row.innerHTML="";
+  if(S.candidates.length>1){
+    S.candidates.forEach(c=>{
+      const b=document.createElement("button");
+      b.className="chip click cand"+(c.addr===S.vault?" active":"");
+      b.textContent=(c.symbol&&c.symbol!=="?"?c.symbol:short(c.addr));
+      b.title=c.name;
+      b.onclick=()=>{S.vault=c.addr;S.vaultBlock=c.block;saveCache();renderCandidates();refreshDynamic();};
+      row.appendChild(b);
+    });
+  }
+}
+
+/* ================= VALIDATION MANUELLE ================= */
+async function setManualVault(addr){
+  try{addr=ethers.getAddress(addr);}catch(e){toast("Adresse invalide");return;}
+  const R=reader(); let ok=false;
+  R.add(addr,IF.vault,"totalAssets",[],()=>ok=true);
+  await R.flush();
+  if(!ok){toast("Ce contrat ne répond pas comme un vault ERC4626");return;}
+  S.vault=addr;S.vaultBlock=null;S.candidates=[];S.donations={given:0n,donors:new Map(),idle:0n,scannedTo:0};
+  sessionStorage.removeItem(CACHE_KEY);
+  log("Vault chargé manuellement : "+short(addr),"warn");
+  await refreshDynamic(); saveCache();
+}
+
+/* ================= BLOCK DE DEPLOIEMENT (fallback) ================= */
+async function findDeployBlock(addr){
+  let lo=Math.max(1,S.latest-CFG.scanWindow),hi=S.latest;
+  while(lo<hi){
+    const mid=(lo+hi)>>1;
+    const code=await rpcCall("eth_getCode",[addr,hexBlock(mid)]);
+    if(code&&code!=="0x")hi=mid;else lo=mid+1;
+  }
+  return lo;
+}
+
+/* ================= DONATIONS ================= */
+async function loadDonations(){
+  if(!S.vault||!S.eurcv)return;
+  const token=S.eurcv.address;
+  let from=S.donations.scannedTo?S.donations.scannedTo+1:(S.vaultBlock||await findDeployBlock(S.vault));
+  if(!S.latest)S.latest=parseInt(await rpcCall("eth_blockNumber",[]),16);
+  if(from>S.latest)return;
+  log(`Scan donations ${mb(from)} → ${mb(S.latest)}…`);
+  const trT0=IF.erc20.getEvent("Transfer").topicHash;
+  const depT0=IF.vault.getEvent("Deposit").topicHash;
+  const pad=ethers.zeroPadValue(S.vault,32);
+  let transfers=[],deposits=[];
+  try{
+    [transfers,deposits]=await Promise.all([
+      scanLogs(token,[trT0,null,pad],from,S.latest,"Transfer→vault"),
+      scanLogs(S.vault,[depT0],from,S.latest,"Deposit vault")
+    ]);
+  }catch(e){log("Scan donations incomplet : "+e.message,"err");return;}
+
+  const depKey=new Map();
+  for(const d of deposits){
+    try{
+      const p=IF.vault.parseLog({topics:d.topics,data:d.data}); if(!p)continue;
+      const k=d.blockNumber+":"+d.transactionIndex;
+      if(!depKey.has(k))depKey.set(k,new Set());
+      depKey.get(k).add(p.args[0].toLowerCase()+"|"+p.args[2].toString());
+    }catch(e){}
+  }
+  const blueL=CFG.morphoBlue.toLowerCase(),vaultL=S.vault.toLowerCase();
+  for(const t of transfers){
+    try{
+      const p=IF.erc20.parseLog({topics:t.topics,data:t.data}); if(!p)continue;
+      const fromA=p.args[0],val=p.args[2];
+      const fl=fromA.toLowerCase();
+      if(fl===blueL||fl===vaultL||fl===ZERO)continue;
+      const k=t.blockNumber+":"+t.transactionIndex;
+      if(depKey.has(k)&&depKey.get(k).has(fl+"|"+val.toString()))continue; // mint ERC4626
+      S.donations.given+=val;
+      const cur=S.donations.donors.get(fromA)||{addr:fromA,given:0n,balance:0n};
+      cur.given+=val;S.donations.donors.set(fromA,cur);
+    }catch(e){}
+  }
+  S.donations.scannedTo=S.latest;
+  // soldes des donateurs
+  if(S.donations.donors.size){
+    const R=reader();
+    for(const d of S.donations.donors.values())
+      R.add(token,IF.erc20,"balanceOf",[d.addr],r=>d.balance=r[0]);
+    await R.flush();
+  }
+  log(`Donations : ${S.donations.donors.size} donateur(s), ${fU(S.donations.given,S.eurcv.decimals).toLocaleString("fr-FR")} ${S.eurcv.symbol} donnés`,"ok");
+}
+
+/* ================= CHARGEMENT DYNAMIQUE ================= */
+async function refreshDynamic(){
+  if(S.busy)return; S.busy=true;
+  const btn=document.getElementById("refreshBtn");btn.classList.add("loading");
+  try{
+    if(!S.latest)S.latest=parseInt(await rpcCall("eth_blockNumber",[]),16);
+    S.nowSec=Math.floor(Date.now()/1000);
+    document.getElementById("blockChip").textContent="bloc "+S.latest.toLocaleString("fr-FR");
+    if(!S.vault){renderNoVault();return;}
+
+    /* --- Round 1 : méta vault --- */
+    const v=S.vault,o={};
+    let R=reader();
+    R.add(v,IF.vault,"name",[],r=>o.name=r[0]);
+    R.add(v,IF.vault,"symbol",[],r=>o.symbol=r[0]);
+    R.add(v,IF.vault,"decimals",[],r=>o.decimals=Number(r[0]));
+    R.add(v,IF.vault,"asset",[],r=>o.asset=ethers.getAddress(r[0]));
+    R.add(v,IF.vault,"fee",[],r=>o.fee=r[0]);
+    R.add(v,IF.vault,"feeRecipient",[],r=>o.feeRecipient=r[0]);
+    R.add(v,IF.vault,"curator",[],r=>o.curator=r[0]);
+    R.add(v,IF.vault,"owner",[],r=>o.owner=r[0]);
+    R.add(v,IF.vault,"morpho",[],r=>o.morpho=r[0]);
+    R.add(v,IF.vault,"totalAssets",[],r=>o.totalAssets=r[0]);
+    R.add(v,IF.vault,"totalSupply",[],r=>o.totalSupply=r[0]);
+    R.add(v,IF.vault,"supplyQueueLength",[],r=>o.sqLen=Number(r[0]));
+    await R.flush();
+    if(o.asset==null)throw new Error("Le vault ne répond pas (asset)");
+    S.vaultMeta=o;
+
+    // asset = token EURCV ?
+    if(!S.eurcv||S.eurcv.address.toLowerCase()!==o.asset.toLowerCase()){
+      const R0=reader();const tm={};
+      R0.add(o.asset,IF.erc20,"symbol",[],r=>tm.sym=r[0]);
+      R0.add(o.asset,IF.erc20,"decimals",[],r=>tm.dec=Number(r[0]));
+      await R0.flush();
+      S.eurcv={address:o.asset,symbol:tm.sym||"EURCV",decimals:tm.dec??18};
+      log("Token sous-jacent résolu : "+S.eurcv.symbol,"ok");
+    }
+
+    /* --- Round 2 : part price, idle, supply queue --- */
+    R=reader();
+    R.add(v,IF.vault,"convertToAssets",[10n**BigInt(o.decimals)],r=>o.sharePrice=r[0]);
+    R.add(o.asset,IF.erc20,"balanceOf",[v],r=>S.donations.idle=r[0]);
+    const queueIds=[];
+    if(o.sqLen!=null){
+      for(let i=0;i<o.sqLen;i++)R.add(v,IF.vault,"supplyQueue",[i],r=>queueIds.push(r[0]));
+    }else{
+      for(let i=0;i<32;i++)R.add(v,IF.vault,"supplyQueue",[i],r=>queueIds.push(r[0]));
+    }
+    await R.flush();
+
+    /* --- Union des marchés : queue vault + découverts (loanToken=EURCV) --- */
+    const eurL=S.eurcv.address.toLowerCase();
+    const ids=new Set(queueIds);
+    for(const m of S.marketIndex.values())
+      if(m.params&&m.params.loanToken.toLowerCase()===eurL)ids.add(m.id);
+    queueIds.forEach(id=>{if(!S.marketIndex.has(id))S.marketIndex.set(id,{id,params:null});});
+
+    /* --- Round 3 : données marchés --- */
+    R=reader();
+    for(const id of ids){
+      const m=S.marketIndex.get(id);
+      R.add(CFG.morphoBlue,IF.blue,"market",[id],r=>m.totals={supA:r[0],supS:r[1],borA:r[2],borS:r[3],lastU:Number(r[4]),fee:r[5]});
+      R.add(CFG.morphoBlue,IF.blue,"position",[id,v],r=>m.vaultShares=r[0]);
+      if(!m.params)R.add(CFG.morphoBlue,IF.blue,"idToMarketParams",[id],r=>m.params={loanToken:r[0],collateralToken:r[1],oracle:r[2],irm:r[3],lltv:r[4]});
+      R.add(v,IF.vault,"config",[id],r=>m.cap=r[0]);
+    }
+    await R.flush();
+
+    /* --- Round 4 : taux IRM + méta collatéraux --- */
+    R=reader();
+    const colls=new Set();
+    for(const id of ids){
+      const m=S.marketIndex.get(id); if(!m.params)continue;
+      const p=m.params;
+      if(p.irm&&p.irm!==ZERO)
+        R.add(p.irm,IF.irm,"borrowRateView",[[p.loanToken,p.collateralToken,p.oracle,p.irm,p.lltv]],r=>m.rate=r[0]);
+      if(p.collateralToken&&p.collateralToken!==ZERO&&!S.tokens[p.collateralToken.toLowerCase()])colls.add(p.collateralToken);
+    }
+    for(const c of colls){
+      S.tokens[c.toLowerCase()]={};
+      const t=S.tokens[c.toLowerCase()];
+      R.add(c,IF.erc20,"symbol",[],r=>t.symbol=r[0]);
+      R.add(c,IF.erc20,"name",[],r=>t.name=r[0]);
+      R.add(c,IF.erc20,"decimals",[],r=>t.decimals=Number(r[0]));
+    }
+    await R.flush();
+
+    /* --- Donations (incrémental) --- */
+    await loadDonations();
+
+    /* --- Calculs dérivés --- */
+    computeDerived();
+    renderAll();
+    saveCache();
+  }catch(e){
+    console.error(e);
+    log("Erreur chargement : "+(e.message||e),"err");
+    if(!S.booted)fatal("Impossible de charger les données on-chain : "+(e.message||e));
+  }finally{
+    S.busy=false;S.booted=true;btn.classList.remove("loading");
+  }
+}
+
+function computeDerived(){
+  const dec=S.eurcv.decimals;
+  const list=[];
+  for(const m of S.marketIndex.values()){
+    if(!m.params||!m.totals)continue;
+    if(m.params.loanToken.toLowerCase()!==S.eurcv.address.toLowerCase())continue;
+    const t=m.totals;let iB=0n;
+    if(t.borA>0n&&m.rate&&m.rate>0n&&S.nowSec>t.lastU){
+      const el=BigInt(S.nowSec-t.lastU);
+      iB=(t.borA*m.rate*el+WAD-1n)/WAD;
+    }
+    const supA=t.supA+iB,borA=t.borA+iB;
+    const u=supA>0n?Number(borA*10000n/supA)/10000:0;
+    const borrowAPR=m.rate?Number(m.rate)*SPY/1e18:0;
+    const feeM=t.fee?Number(t.fee)/1e18:0;
+    const supplyAPR=borrowAPR*u*(1-feeM);
+    let vaultAssets=0n;
+    if(m.vaultShares&&t.supS>0n)vaultAssets=m.vaultShares*(supA+1n)/(t.supS+1n);
+    const coll=m.params.collateralToken.toLowerCase();
+    list.push({id:m.id,params:m.params,supA,borA,u,borrowAPR,supplyAPR,feeM,vaultAssets,cap:m.cap,
+      collSym:S.tokens[coll]?(S.tokens[coll].symbol||short(m.params.collateralToken)):(m.params.collateralToken===ZERO?"—":short(m.params.collateralToken))});
+  }
+  list.sort((a,b)=>fU(b.supA,dec)-fU(a.supA,dec));
+  S.mkts=list;
+
+  const o=S.vaultMeta;
+  if(o.totalAssets>0n){
+    let gross=0n,borrowTot=0n;
+    for(const m of list){gross+=m.vaultAssets;borrowTot+=m.borA;}
+    S.borrowTot=borrowTot;
+    let apr=0;
+    for(const m of list)apr+=fU(m.vaultAssets,dec)*m.supAPR;
+    apr/=fU(o.totalAssets,dec);
+    const feeV=o.fee?Number(o.fee)/1e18:0;
+    S.aprGross=apr;S.feeV=feeV;
+    S.apyNet=Math.exp(apr*(1-feeV))-1;
+    S.utilVault=Number(gross*10000n/o.totalAssets)/10000*(list.length?list.reduce((s,m)=>s+m.u*fU(m.vaultAssets,dec),0)/Math.max(1e-9,fU(gross,dec)):0);
+    S.utilVault=Math.min(1,S.utilVault);
+    S.idlePct=fU(S.donations.idle,dec)/fU(o.totalAssets,dec);
+  }
+}
+
+/* ================= RENDU ================= */
+const KPI_DEFS=[
+  {id:"tvl",label:"TVL vault",fmt:v=>fmtEUR(v,true)},
+  {id:"apy",label:"APY net estimé",fmt:v=>fmtPct(v*100)},
+  {id:"share",label:"Prix de la part",fmt:v=>v.toLocaleString("fr-FR",{maximumFractionDigits:6})+" EURCV"},
+  {id:"util",label:"Utilisation pondérée",fmt:v=>fmtPct(v*100)},
+  {id:"borrow",label:"Total emprunté (marchés EURCV)",fmt:v=>fmtEUR(v,true)},
+  {id:"rw",label:"Rewards restants (donation)",fmt:v=>fmtEUR(v,true)},
+];
+function buildKpis(){
+  document.getElementById("kpis").innerHTML=KPI_DEFS.map(k=>`
+    <div class="kpi"><div class="kpi-label">${k.label}</div>
+    <div class="kpi-value sk" id="kv-${k.id}">···</div>
+    <div class="kpi-sub" id="ks-${k.id}"></div></div>`).join("");
+}
+function setVal(id,num,fmt){
+  const el=document.getElementById("kv-"+id);if(!el)return;
+  el.classList.remove("sk");
+  if(num==null||!isFinite(num)){el.textContent="—";return;}
+  const prev=parseFloat(el.dataset.v);el.dataset.v=num;
+  if(!isFinite(prev)||Math.abs(prev-num)<1e-12){el.textContent=fmt(num);return;}
+  const t0=performance.now(),dur=750;
+  (function step(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);
+    el.textContent=fmt(prev+(num-prev)*e);if(k<1)requestAnimationFrame(step);})(t0);
+}
+
+function renderAll(){
+  const o=S.vaultMeta,dec=S.eurcv.decimals;
+  /* header chips */
+  document.getElementById("vaultName").innerHTML=esc((o.name||"Vault EURCV").toUpperCase().replace(/(EURCV)/,'<span class="hl">$1</span>'));
+  const ach=document.getElementById("vaultAddrChip");
+  ach.textContent="vault : "+short(S.vault);ach.dataset.copy=S.vault;ach.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(S.vault);toast("Adresse vault copiée ✓");};
+  document.getElementById("assetChip").textContent="actif : "+S.eurcv.symbol+" · "+o.decimals+" dec";
+  document.getElementById("curatorChip").textContent="curator : "+(o.curator?short(o.curator):"—");
+  document.getElementById("feeChip").textContent="fee vault : "+(o.fee!=null?fmtPct(Number(o.fee)/1e16,0):"—");
+  const mch=document.getElementById("morphoChip");
+  mch.textContent="morpho blue : "+short(CFG.morphoBlue);mch.dataset.copy=CFG.morphoBlue;
+  mch.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(CFG.morphoBlue);toast("Adresse Morpho Blue copiée ✓");};
+
+  /* KPIs */
+  const tvl=fU(o.totalAssets,dec);
+  const donorsBal=[...S.donations.donors.values()].reduce((s,d)=>s+(d.balance||0n),0n);
+  const rw=S.commitment!=null?Math.max(0,S.commitment-fU(S.donations.given,dec)):fU(donorsBal,dec);
+  setVal("tvl",tvl,KPI_DEFS[0].fmt);
+  setVal("apy",S.apyNet??NaN,KPI_DEFS[1].fmt);
+  setVal("share",o.sharePrice?fU(o.sharePrice,dec):NaN,KPI_DEFS[2].fmt);
+  setVal("util",S.utilVault??NaN,KPI_DEFS[3].fmt);
+  setVal("borrow",S.borrowTot?fU(S.borrowTot,dec):0,KPI_DEFS[4].fmt);
+  setVal("rw",rw,KPI_DEFS[5].fmt);
+  sub("tvl",`${fU(o.totalSupply,o.decimals??dec).toLocaleString("fr-FR",{maximumFractionDigits:0})} parts`);
+  sub("apy",`brut ${fmtPct((S.aprGross??0)*100)} · frais ${fmtPct((S.feeV??0)*100,0)}`);
+  sub("share","convertToAssets(1 part)");
+  sub("util",`idle ${fmtPct((S.idlePct??0)*100)}`);
+  sub("borrow",S.mkts.length+" marchés EURCV");
+  sub("rw",S.commitment!=null?"engagement déclaré − donné":"soldes des donateurs");
+
+  renderRewards(donorsBal);
+  renderAlloc();
+  renderMarkets();
+}
+function sub(id,txt){const el=document.getElementById("ks-"+id);if(el)el.textContent=txt;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function renderRewards(donorsBal){
+  const dec=S.eurcv.decimals,sym=S.eurcv.symbol;
+  const given=fU(S.donations.given,dec),idle=fU(S.donations.idle,dec);
+  const donors=[...S.donations.donors.values()].sort((a,b)=>Number(b.given-a.given));
+  const reste=S.commitment!=null?Math.max(0,S.commitment-given):fU(donorsBal,dec);
+  const subTxt=S.commitment!=null
+    ? `Engagement déclaré ${fmtEUR(S.commitment,true)} − donations déjà transférées on-chain.`
+    : `Somme des soldes on-chain des adresses ayant déjà fait une donation au vault (capacité restante du programme).`;
+  document.getElementById("rewardsBody").innerHTML=`
+    <div class="rw-hero">
+      <div class="rw-label">Reste à distribuer · ${sym}</div>
+      <div class="rw-big">${fmtEUR(reste,true)}</div>
+      <div class="rw-sub">${subTxt}</div>
+    </div>
+    <div class="rw-stats">
+      <div><label>Donations déjà reçues (on-chain)</label><b>${fmtEUR(given,true)}</b></div>
+      <div><label>Idle vault (non alloué)</label><b>${fmtEUR(idle,true)}</b></div>
+      <div><label>Donateurs détectés</label><b>${donors.length}</b></div>
+    </div>
+    <div class="rw-commit">
+      <span>Engagement total déclaré (optionnel) :</span>
+      <input id="commitInput" placeholder="ex. 250 000" value="${S.commitment??""}">
+      <button class="btn" id="commitApply">Appliquer</button>
+      ${S.commitment!=null?'<button class="btn" id="commitClear">✕</button>':""}
+    </div>
+    ${donors.length?`<div class="tbl-wrap"><table>
+      <thead><tr><th>Donateur</th><th class="num">Total donné</th><th class="num">Solde restant</th><th style="width:90px"></th></tr></thead>
+      <tbody>${donors.map(d=>{
+        const g=fU(d.given,dec),b=fU(d.balance||0n,dec);
+        const mx=Math.max(1,...donors.map(x=>fU(x.balance||0n,dec)));
+        return `<tr><td><span class="addr" data-copy="${d.addr}" title="cliquer pour copier">${short(d.addr)}</span></td>
+        <td class="num">${fmtEUR(g,true)}</td><td class="num ${b>0?'pos':''}">${fmtEUR(b,true)}</td>
+        <td><span class="util"><i class="g" data-w="${Math.round(b/mx*100)}"></i></span></td></tr>`;}).join("")}
+      </tbody></table></div>`
+    :`<p class="note">Aucun transfert de type « donation » détecté sur la fenêtre scannée (les mints ERC4626 et les retraits Morpho Blue sont exclus par rapprochement avec les événements Deposit et par filtrage d'adresse).</p>`}
+    <p class="note">Modèle donation : les incentives sont versées par transfert direct vers le vault ; une fois reçues, elles appartiennent immédiatement aux porteurs de parts via le prix de la part (le solde « idle » est inclus dans totalAssets). Le reste à distribuer est donc évalué côté programme : soldes des donateurs, ou engagement déclaré − déjà donné.</p>`;
+  document.getElementById("commitApply").onclick=()=>{
+    const raw=document.getElementById("commitInput").value.replace(/\s/g,"").replace(",",".");
+    const n=parseFloat(raw);
+    if(isFinite(n)&&n>0){S.commitment=n;renderAll();toast("Engagement appliqué ✓");}else toast("Montant invalide");
+  };
+  const cc=document.getElementById("commitClear");
+  if(cc)cc.onclick=()=>{S.commitment=null;renderAll();};
+  animateBars(document.getElementById("rewardsBody"));
+}
+
+function renderAlloc(){
+  const dec=S.eurcv.decimals,o=S.vaultMeta;
+  const total=fU(o.totalAssets,dec);
+  const items=S.mkts.filter(m=>m.vaultAssets>0n).map(m=>({name:m.collSym,val:fU(m.vaultAssets,dec)}));
+  const idle=fU(S.donations.idle,dec);
+  if(idle>0)items.push({name:"Idle (non alloué)",val:idle,idle:true});
+  items.sort((a,b)=>b.val-a.val);
+  document.getElementById("allocTag").textContent=items.length+" positions";
+  if(!total){document.getElementById("allocBody").innerHTML='<p class="note">Vault vide.</p>';return;}
+  const bar=items.map((it,i)=>`<i style="background:${it.idle?'rgba(255,255,255,.14)':PALETTE[i%PALETTE.length]}" data-w="${(it.val/total*100).toFixed(2)}"></i>`).join("");
+  document.getElementById("allocBody").innerHTML=`
+    <div class="alloc-bar">${bar}</div>
+    ${items.map((it,i)=>`<div class="alloc-row">
+      <span class="sw" style="background:${it.idle?'rgba(255,255,255,.2)':PALETTE[i%PALETTE.length]}"></span>
+      <span class="alloc-name">${esc(it.name)}</span>
+      <span class="alloc-val">${fmtEUR(it.val,true)}</span>
+      <span class="alloc-pct">${fmtPct(it.val/total*100,1)}</span>
+    </div>`).join("")}`;
+  animateBars(document.getElementById("allocPanel"));
+}
+
+function renderMarkets(){
+  const dec=S.eurcv.decimals;
+  document.getElementById("marketsTag").textContent=S.mkts.length+" marchés · "+S.mkts.filter(m=>m.vaultAssets>0n).length+" alloués";
+  if(!S.mkts.length){
+    document.getElementById("marketsBody").innerHTML='<p class="note">Aucun marché EURCV trouvé sur la fenêtre scannée. Essayez un rescan complet ou collez l\'adresse du vault.</p>';return;
+  }
+  document.getElementById("marketsBody").innerHTML=`
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>Marché / Collatéral</th><th class="num">LLTV</th><th class="num">Cap</th>
+      <th class="num">Supply</th><th class="num">Borrow</th><th>Utilisation</th>
+      <th class="num">APR borrow</th><th class="num">APR supply</th><th class="num">Part vault</th><th></th>
+    </tr></thead>
+    <tbody>${S.mkts.map(m=>{
+      const inV=m.vaultAssets>0n;
+      const mSup=fU(m.supA,dec),mBor=fU(m.borA,dec);
+      const capStr=m.cap==null?"—":(m.cap>=2n**128n?"∞":fmtEUR(fU(m.cap,dec),true));
+      const share=mSup>0?fU(m.vaultAssets,dec)/mSup:0;
+      return `<tr class="${inV?'in-vault':''}" title="market id : ${m.id}">
+        <td><b>${esc(m.collSym)}</b> <span class="dim">${short(m.params.collateralToken)}</span>${inV?' <span class="tag" style="margin-left:6px">alloué</span>':''}</td>
+        <td class="num">${fmtPct(Number(m.params.lltv)/1e16,0)}</td>
+        <td class="num dim">${capStr}</td>
+        <td class="num">${fmtEUR(mSup,true)}</td>
+        <td class="num">${fmtEUR(mBor,true)}</td>
+        <td><span class="util"><i class="${m.u>0.9?'hi':''}" data-w="${Math.round(m.u*100)}"></i></span><span class="num" style="font-family:var(--mono);font-size:12px">${fmtPct(m.u*100,1)}</span></td>
+        <td class="num">${m.borrowAPR?fmtPct(m.borrowAPR*100):"—"}</td>
+        <td class="num ${m.supplyAPR>0?'pos':''}">${m.supplyAPR?fmtPct(m.supplyAPR*100):"—"}</td>
+        <td class="num dim">${inV?fmtPct(share*100,1):"—"}</td>
+        <td><a class="ext" target="_blank" rel="noopener" href="https://app.morpho.org/market?id=${m.id}&network=base" title="Ouvrir sur app.morpho.org">↗</a></td>
+      </tr>`;}).join("")}
+    </tbody></table></div>
+  <p class="note">Taux lus depuis l'IRM de chaque marché (borrowRateView) + intérêts courus recalculés depuis lastUpdate. APR supply = APR borrow × utilisation × (1 − fee marché). Liens vers app.morpho.org (off-chain).</p>`;
+  animateBars(document.getElementById("marketsPanel"));
+}
+
+function animateBars(root){
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    root.querySelectorAll("[data-w]").forEach(el=>el.style.width=el.dataset.w+"%");
+  }));
+}
+
+function renderNoVault(){
+  document.getElementById("rewardsBody").innerHTML='<p class="note">Aucun vault EURCV détecté automatiquement sur la fenêtre scannée. Collez l\'adresse du vault Steakhouse EURCV dans le champ « override » en haut à droite.</p>';
+  document.getElementById("allocBody").innerHTML='<p class="note">En attente d\'un vault.</p>';
+  document.getElementById("marketsBody").innerHTML=S.mkts.length?"":'<p class="note">En attente de marchés…</p>';
+  if(S.mkts.length)renderMarkets();
+}
+
+/* ================= BOOT ================= */
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error(src));document.head.appendChild(s);});}
+async function loadEthers(){
+  const cdns=["https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js",
+              "https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js",
+              "https://unpkg.com/ethers@6.13.2/dist/ethers.umd.min.js"];
+  for(const u of cdns){try{await loadScript(u);if(window.ethers)return;}catch(e){}}
+  throw new Error("CDN ethers.js inaccessibles");
+}
+
+(async function boot(){
+  buildKpis();
+  try{await loadEthers();}catch(e){fatal(e.message);return;}
+  initIfaces();
+  document.getElementById("refreshBtn").onclick=()=>refreshDynamic();
+  document.getElementById("manualGo").onclick=()=>{const a=document.getElementById("manualAddr").value.trim();if(a)setManualVault(a);};
+  document.getElementById("manualAddr").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("manualGo").click();});
+  document.getElementById("rescanBtn").onclick=async()=>{log("Rescan complet demandé…","warn");S.marketIndex.clear();S.candidates=[];S.vault=null;S.donations={given:0n,donors:new Map(),idle:0n,scannedTo:0};await initStatic(true);await refreshDynamic();};
+  try{
+    await initStatic(false);
+    await refreshDynamic();
+    setInterval(()=>{if(document.getElementById("liveToggle").checked&&!document.hidden&&!S.busy)refreshDynamic();},CFG.refreshMs);
+    setInterval(async()=>{try{const b=parseInt(await rpcCall("eth_blockNumber",[]),16);S.latest=b;document.getElementById("blockChip").textContent="bloc "+b.toLocaleString("fr-FR");}catch(e){}},20000);
+  }catch(e){fatal(e.message);}
+})();
+</script>
+</body>
+</html>
